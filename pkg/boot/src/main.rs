@@ -8,10 +8,12 @@ extern crate alloc;
 
 use alloc::boxed::Box;
 use alloc::vec;
-use uefi::{entry, Status};
+use elf::map_physical_memory;
+use uefi::{entry, mem::memory_map::MemoryMap, Status};
 use x86_64::registers::control::*;
 use xmas_elf::ElfFile;
 use ysos_boot::*;
+
 
 mod config;
 
@@ -61,6 +63,9 @@ fn efi_main() -> Status {
     let mut page_table = current_page_table();
 
     // FIXME: root page table is readonly, disable write protect (Cr0)
+    unsafe{
+        Cr0::update(|cr0| cr0.remove(Cr0Flags::WRITE_PROTECT));
+    }
 
     // FIXME: map physical memory to specific virtual address offset
 
