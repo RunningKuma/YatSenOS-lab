@@ -12,7 +12,10 @@ use elf::map_physical_memory;
 use uefi::{entry, mem::memory_map::MemoryMap, Status};
 use x86_64::registers::control::*;
 use xmas_elf::ElfFile;
+use ysos_boot::config as ysos_config;
 use ysos_boot::*;
+use elf::load_elf;
+use elf::map_range;
 
 
 mod config;
@@ -42,7 +45,7 @@ fn efi_main() -> Status {
         /* FIXME: Load kernel elf file */
         let mut file = open_file(config.kernel_path);
         let buf = load_file(&mut file);
-        ElfFile::new(buf).expect("Failed to parse ELF file")
+        ElfFile::new(buf).unwrap()
      };
 
     unsafe {
@@ -68,13 +71,19 @@ fn efi_main() -> Status {
     }
 
     // FIXME: map physical memory to specific virtual address offset
-
+    map_physical_memory(config.physical_memory_offset, max_phys_addr, &mut page_table , &mut UEFIFrameAllocator);
     // FIXME: load and map the kernel elf file
-
+    load_elf(&elf, config.physical_memory_offset, &mut page_table, &mut UEFIFrameAllocator);
     // FIXME: map kernel stack
+    map_range(config.kernel_stack_address, match config.kernel_stack_auto_grow{
+        0 => config.kernel_stack_size,
+        _ => config.kernel_stack_auto_grow / 4096
+    } , &mut page_table, &mut UEFIFrameAllocator);
 
     // FIXME: recover write protect (Cr0)
-
+    unsafe{
+        Cr0::update(|cr0| cr0.insert(Cr0Flags::WRITE_PROTECT));
+    }
     free_elf(elf);
 
     // 5. Pass system table to kernel
