@@ -10,6 +10,7 @@ use alloc::boxed::Box;
 use alloc::vec;
 use uefi::{entry, Status};
 use x86_64::registers::control::*;
+use xmas_elf::ElfFile;
 use ysos_boot::*;
 
 mod config;
@@ -22,14 +23,25 @@ fn efi_main() -> Status {
 
     log::set_max_level(log::LevelFilter::Info);
     info!("Running UEFI bootloader...");
-
+        
+        
     // 1. Load config
-    let config = { /* FIXME: Load config file as Config */ };
+    let config = { 
+        /* FIXME: Load config file as Config */
+        let mut file = open_file(CONFIG_PATH);
+        let buf = load_file(&mut file);
+        crate::config::Config::parse(buf)
+     };
 
     info!("Config: {:#x?}", config);
 
     // 2. Load ELF files
-    let elf = { /* FIXME: Load kernel elf file */ };
+    let elf = { 
+        /* FIXME: Load kernel elf file */
+        let mut file = open_file(config.kernel_path);
+        let buf = load_file(&mut file);
+        ElfFile::new(buf).expect("Failed to parse ELF file")
+     };
 
     unsafe {
         set_entry(elf.header.pt2.entry_point() as usize);
