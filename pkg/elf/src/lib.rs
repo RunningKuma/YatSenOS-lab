@@ -7,8 +7,8 @@ use core::ptr::{copy_nonoverlapping, write_bytes};
 
 use x86_64::structures::paging::page::PageRange;
 use x86_64::structures::paging::{mapper::*, *};
-use x86_64::{align_up, PhysAddr, VirtAddr};
-use xmas_elf::{program, ElfFile};
+use x86_64::{PhysAddr, VirtAddr, align_up};
+use xmas_elf::{ElfFile, program};
 
 /// Map physical memory
 ///
@@ -131,14 +131,14 @@ fn load_segment(
     // FIXME: handle page table flags with segment flags
 
     // unimplemented!("Handle page table flags with segment flags!");
-    if segment.flags().is_read(){
-        page_table_flags |= PageTableFlags::USER_ACCESSIBLE;
+    if segment.flags().is_read() {
+        page_table_flags |= PageTableFlags::USER_ACCESSIBLE;//add flag R
     }
-    if segment.flags().is_write(){
-        page_table_flags |= PageTableFlags::WRITABLE;
+    if segment.flags().is_write() {
+        page_table_flags |= PageTableFlags::WRITABLE; //add flag W
     }
-    if !segment.flags().is_execute(){
-        page_table_flags |= PageTableFlags::NO_EXECUTE;
+    if !segment.flags().is_execute() {
+        page_table_flags |= PageTableFlags::NO_EXECUTE; //add flag no-X
     }
 
     trace!("Segment page table flag: {:?}", page_table_flags);
