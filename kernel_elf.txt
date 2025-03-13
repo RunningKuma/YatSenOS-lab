@@ -1,0 +1,272 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0xffffff00000020d0
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          51504 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         7
+  Size of section headers:           64 (bytes)
+  Number of section headers:         12
+  Section header string table index: 10
+
+Section Headers:
+  [Nr] Name              Type             Address           Offset
+       Size              EntSize          Flags  Link  Info  Align
+  [ 0]                   NULL             0000000000000000  00000000
+       0000000000000000  0000000000000000           0     0     0
+  [ 1] .rodata           PROGBITS         ffffff0000000000  00001000
+       0000000000001237  0000000000000000  AM       0     0     8
+  [ 2] .eh_frame_hdr     PROGBITS         ffffff0000001238  00002238
+       000000000000000c  0000000000000000   A       0     0     4
+  [ 3] .eh_frame         PROGBITS         ffffff0000001248  00002248
+       000000000000001c  0000000000000000   A       0     0     8
+  [ 4] .text             PROGBITS         ffffff0000002000  00003000
+       00000000000036df  0000000000000000  AX       0     0     16
+  [ 5] .data             PROGBITS         ffffff0000006000  00007000
+       0000000000000580  0000000000000000  WA       0     0     8
+  [ 6] .got              PROGBITS         ffffff0000007000  00008000
+       0000000000000018  0000000000000000  WA       0     0     8
+  [ 7] .bss              NOBITS           ffffff0000008000  00009000
+       0000000000000020  0000000000000000  WA       0     0     8
+  [ 8] .comment          PROGBITS         0000000000000000  00009000
+       0000000000000093  0000000000000001  MS       0     0     1
+  [ 9] .symtab           SYMTAB           0000000000000000  00009098
+       00000000000010c8  0000000000000018          11   131     8
+  [10] .shstrtab         STRTAB           0000000000000000  0000a160
+       000000000000005a  0000000000000000           0     0     1
+  [11] .strtab           STRTAB           0000000000000000  0000a1ba
+       0000000000002774  0000000000000000           0     0     1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  D (mbind), l (large), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  LOAD           0x0000000000001000 0xffffff0000000000 0xffffff0000000000
+                 0x0000000000001264 0x0000000000001264  R      0x1000
+  LOAD           0x0000000000003000 0xffffff0000002000 0xffffff0000002000
+                 0x00000000000036df 0x00000000000036df  R E    0x1000
+  LOAD           0x0000000000007000 0xffffff0000006000 0xffffff0000006000
+                 0x0000000000001018 0x0000000000001018  RW     0x1000
+  LOAD           0x0000000000009000 0xffffff0000008000 0xffffff0000008000
+                 0x0000000000000000 0x0000000000000020  RW     0x1000
+  GNU_RELRO      0x0000000000008000 0xffffff0000007000 0xffffff0000007000
+                 0x0000000000000018 0x0000000000000018  R      0x1
+  GNU_EH_FRAME   0x0000000000002238 0xffffff0000001238 0xffffff0000001238
+                 0x000000000000000c 0x000000000000000c  R      0x4
+  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
+                 0x0000000000000000 0x0000000000000000  RW     0x0
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .rodata .eh_frame_hdr .eh_frame 
+   01     .text 
+   02     .data .got 
+   03     .bss 
+   04     .got 
+   05     .eh_frame_hdr 
+   06     
+
+There is no dynamic section in this file.
+
+There are no relocations in this file.
+No processor specific unwind information to decode
+
+Symbol table '.symtab' contains 179 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS ysos_kernel.6d9e[...]
+     2: ffffff0000002000   202 FUNC    LOCAL  DEFAULT    4 _ZN11ysos_kernel[...]
+     3: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS ysos_kernel.eabb[...]
+     4: ffffff00000020e0     5 FUNC    LOCAL  DEFAULT    4 _ZN41_$LT$bool$u[...]
+     5: ffffff00000020f0    20 FUNC    LOCAL  DEFAULT    4 _ZN42_$LT$$RF$T$[...]
+     6: ffffff0000002110     8 FUNC    LOCAL  DEFAULT    4 _ZN42_$LT$$RF$T$[...]
+     7: ffffff0000002120   161 FUNC    LOCAL  DEFAULT    4 _ZN42_$LT$$RF$T$[...]
+     8: ffffff00000021d0     8 FUNC    LOCAL  DEFAULT    4 _ZN42_$LT$$RF$T$[...]
+     9: ffffff00000021e0    18 FUNC    LOCAL  DEFAULT    4 _ZN42_$LT$$RF$T$[...]
+    10: ffffff0000002200    27 FUNC    LOCAL  DEFAULT    4 _ZN42_$LT$$RF$T$[...]
+    11: ffffff0000002220   140 FUNC    LOCAL  DEFAULT    4 _ZN42_$LT$$RF$T$[...]
+    12: ffffff00000022b0    18 FUNC    LOCAL  DEFAULT    4 _ZN44_$LT$$RF$T$[...]
+    13: ffffff00000022d0    24 FUNC    LOCAL  DEFAULT    4 _ZN4core3fmt3num[...]
+    14: ffffff00000022f0     3 FUNC    LOCAL  DEFAULT    4 _ZN4core3fmt5Wri[...]
+    15: ffffff0000002300    15 FUNC    LOCAL  DEFAULT    4 _ZN4core3fmt5Wri[...]
+    16: ffffff0000002310   174 FUNC    LOCAL  DEFAULT    4 _ZN4spin4once17O[...]
+    17: ffffff0000008000     2 OBJECT  LOCAL  DEFAULT    7 _ZN11ysos_kernel[...]
+    18: ffffff00000023c0    20 FUNC    LOCAL  DEFAULT    4 _ZN53_$LT$core..[...]
+    19: ffffff00000023e0    40 FUNC    LOCAL  DEFAULT    4 _ZN56_$LT$log..S[...]
+    20: ffffff0000002850    43 FUNC    LOCAL  DEFAULT    4 _ZN11ysos_kernel[...]
+    21: ffffff0000000218     0 OBJECT  LOCAL  DEFAULT    1 _ZN11ysos_kernel[...]
+    22: ffffff00000025d0     3 FUNC    LOCAL  DEFAULT    4 _ZN63_$LT$ysos_k[...]
+    23: ffffff00000025e0     1 FUNC    LOCAL  DEFAULT    4 _ZN63_$LT$ysos_k[...]
+    24: ffffff00000025f0     1 FUNC    LOCAL  DEFAULT    4 _ZN63_$LT$ysos_k[...]
+    25: ffffff0000002600     3 FUNC    LOCAL  DEFAULT    4 _ZN80_$LT$ysos_k[...]
+    26: ffffff0000002880    51 FUNC    LOCAL  DEFAULT    4 _ZN11ysos_kernel[...]
+    27: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    28: ffffff0000008008     8 OBJECT  LOCAL  HIDDEN     7 _ZN4uefi5table12[...]
+    29: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    30: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    31: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    32: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    33: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    34: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    35: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    36: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    37: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    38: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    39: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    40: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    41: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    42: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    43: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi.5d0e169770f[...]
+    44: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS ucs2.1b2c1a890bb[...]
+    45: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    46: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    47: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    48: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    49: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    50: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    51: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    52: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    53: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uefi_raw.ee5f1f0[...]
+    54: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS uguid.1cc35452ec[...]
+    55: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS bitflags.cf3beb3[...]
+    56: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS log.a051adba0c99[...]
+    57: ffffff00000028d0     3 FUNC    LOCAL  DEFAULT    4 _ZN43_$LT$log..N[...]
+    58: ffffff00000028e0     1 FUNC    LOCAL  DEFAULT    4 _ZN43_$LT$log..N[...]
+    59: ffffff00000028f0     1 FUNC    LOCAL  DEFAULT    4 _ZN43_$LT$log..N[...]
+    60: ffffff0000008010     8 OBJECT  LOCAL  DEFAULT    7 _ZN3log5STATE17h[...]
+    61: ffffff0000006330     8 OBJECT  LOCAL  DEFAULT    5 _ZN3log6LOGGER17[...]
+    62: ffffff0000006338     8 OBJECT  LOCAL  DEFAULT    5 _ZN3log6LOGGER17[...]
+    63: ffffff00000003df     0 OBJECT  LOCAL  DEFAULT    1 _ZN3log6logger3N[...]
+    64: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    65: ffffff000000048e   200 OBJECT  LOCAL  HIDDEN     1 anon.b7a70a672e3[...]
+    66: ffffff000000048c     2 OBJECT  LOCAL  HIDDEN     1 anon.b7a70a672e3[...]
+    67: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    68: ffffff0000002b90   579 FUNC    LOCAL  DEFAULT    4 _ZN4core4char7me[...]
+    69: ffffff00000033c0    87 FUNC    LOCAL  DEFAULT    4 _ZN4core3fmt9For[...]
+    70: ffffff000000011c     4 OBJECT  LOCAL  HIDDEN     1 anon.c6eb5b8a4b2[...]
+    71: ffffff0000000669     5 OBJECT  LOCAL  HIDDEN     1 anon.c6eb5b8a4b2[...]
+    72: ffffff0000003ef0    16 FUNC    LOCAL  HIDDEN     4 _ZN42_$LT$$RF$T$[...]
+    73: ffffff0000003f00    18 FUNC    LOCAL  HIDDEN     4 _ZN44_$LT$$RF$T$[...]
+    74: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    75: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    76: ffffff0000004050   266 FUNC    LOCAL  HIDDEN     4 _ZN4core3fmt3num[...]
+    77: ffffff0000004050   266 FUNC    LOCAL  HIDDEN     4 _ZN4core3fmt3num[...]
+    78: ffffff0000003f30   270 FUNC    LOCAL  HIDDEN     4 _ZN4core3fmt3num[...]
+    79: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    80: ffffff00000006a0    16 OBJECT  LOCAL  HIDDEN     1 anon.3909d6fb8cf[...]
+    81: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    82: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    83: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    84: ffffff0000000704     2 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    85: ffffff0000000703     1 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    86: ffffff0000000706     1 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    87: ffffff0000000707     2 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    88: ffffff00000063f8    48 OBJECT  LOCAL  HIDDEN     5 anon.92e916ca986[...]
+    89: ffffff0000000701     2 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    90: ffffff000000070a     1 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    91: ffffff0000000709     1 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    92: ffffff00000006fa     2 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    93: ffffff00000006f7     3 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    94: ffffff00000006fc     2 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    95: ffffff00000006fe     3 OBJECT  LOCAL  HIDDEN     1 anon.92e916ca986[...]
+    96: ffffff00000047d0    15 FUNC    LOCAL  HIDDEN     4 _ZN4core3fmt5Wri[...]
+    97: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    98: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+    99: ffffff0000004c20   499 FUNC    LOCAL  HIDDEN     4 _ZN71_$LT$core..[...]
+   100: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+   101: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+   102: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+   103: ffffff0000005350   275 FUNC    LOCAL  HIDDEN     4 _ZN4core7unicode[...]
+   104: ffffff0000000ba5    80 OBJECT  LOCAL  HIDDEN     1 anon.41ca9933458[...]
+   105: ffffff0000000bf5   290 OBJECT  LOCAL  HIDDEN     1 anon.41ca9933458[...]
+   106: ffffff0000000d17   297 OBJECT  LOCAL  HIDDEN     1 anon.41ca9933458[...]
+   107: ffffff0000000897    88 OBJECT  LOCAL  HIDDEN     1 anon.41ca9933458[...]
+   108: ffffff00000008ef   208 OBJECT  LOCAL  HIDDEN     1 anon.41ca9933458[...]
+   109: ffffff00000009bf   486 OBJECT  LOCAL  HIDDEN     1 anon.41ca9933458[...]
+   110: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS core.b80e45383e7[...]
+   111: ffffff0000006568    24 OBJECT  LOCAL  HIDDEN     5 anon.bd5e32db0b7[...]
+   112: ffffff0000006550    24 OBJECT  LOCAL  HIDDEN     5 anon.bd5e32db0b7[...]
+   113: ffffff0000000ec0   136 OBJECT  LOCAL  HIDDEN     1 _ZN4core7unicode[...]
+   114: ffffff0000000f48   751 OBJECT  LOCAL  HIDDEN     1 _ZN4core7unicode[...]
+   115: ffffff0000000e40   126 OBJECT  LOCAL  HIDDEN     1 anon.bd5e32db0b7[...]
+   116: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   117: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   118: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   119: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   120: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   121: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   122: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   123: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   124: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   125: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   126: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   127: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   128: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   129: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   130: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS compiler_builtin[...]
+   131: ffffff00000020d0     6 FUNC    GLOBAL DEFAULT    4 _start
+   132: ffffff00000024b0   286 FUNC    GLOBAL DEFAULT    4 rust_begin_unwind
+   133: ffffff0000002610   568 FUNC    GLOBAL DEFAULT    4 _ZN11ysos_kernel[...]
+   134: ffffff0000008018     8 OBJECT  GLOBAL DEFAULT    7 _ZN3log20MAX_LOG[...]
+   135: ffffff0000002aa0     4 FUNC    GLOBAL DEFAULT    4 _ZN3log13__priva[...]
+   136: ffffff0000002960   310 FUNC    GLOBAL DEFAULT    4 _ZN3log13__priva[...]
+   137: ffffff0000002410   156 FUNC    GLOBAL DEFAULT    4 _ZN11ysos_kernel[...]
+   138: ffffff0000003a60    48 FUNC    GLOBAL DEFAULT    4 _ZN43_$LT$bool$u[...]
+   139: ffffff0000003420   630 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt9For[...]
+   140: ffffff0000002de0    16 FUNC    GLOBAL DEFAULT    4 _ZN57_$LT$core..[...]
+   141: ffffff00000037c0   287 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt9For[...]
+   142: ffffff0000003a90   923 FUNC    GLOBAL DEFAULT    4 _ZN40_$LT$str$u2[...]
+   143: ffffff0000002ab0   110 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt3num[...]
+   144: ffffff0000002b20   110 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt3num[...]
+   145: ffffff0000003f20    15 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt3num[...]
+   146: ffffff00000036c0   247 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt9For[...]
+   147: ffffff0000003e30    17 FUNC    GLOBAL DEFAULT    4 _ZN42_$LT$str$u2[...]
+   148: ffffff0000002df0   623 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt5wri[...]
+   149: ffffff0000004e40    73 FUNC    GLOBAL DEFAULT    4 _ZN4core9panicki[...]
+   150: ffffff00000036a0    17 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt9For[...]
+   151: ffffff00000038e0   380 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt9For[...]
+   152: ffffff0000004280   130 FUNC    GLOBAL DEFAULT    4 _ZN4core6result1[...]
+   153: ffffff00000047e0    21 FUNC    GLOBAL DEFAULT    4 _ZN4core6option1[...]
+   154: ffffff0000002900    95 FUNC    GLOBAL DEFAULT    4 _ZN3log10set_log[...]
+   155: ffffff00000028c0     8 FUNC    GLOBAL DEFAULT    4 _ZN4uefi5table16[...]
+   156: ffffff0000004800    98 FUNC    GLOBAL DEFAULT    4 _ZN4core6option1[...]
+   157: ffffff0000004600   462 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt8bui[...]
+   158: ffffff0000004040    16 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt3num[...]
+   159: ffffff0000004e89    91 FUNC    GLOBAL DEFAULT    4 _ZN4core9panicki[...]
+   160: ffffff00000036a0    17 FUNC    GLOBAL DEFAULT    4 _ZN57_$LT$core..[...]
+   161: ffffff0000004e20    28 FUNC    GLOBAL DEFAULT    4 _ZN4core9panicki[...]
+   162: ffffff0000004160     6 FUNC    GLOBAL DEFAULT    4 _ZN4core5slice5i[...]
+   163: ffffff0000004040    16 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt3num[...]
+   164: ffffff0000003e50   152 FUNC    GLOBAL DEFAULT    4 _ZN41_$LT$char$u[...]
+   165: ffffff0000002ab0   110 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt3num[...]
+   166: ffffff0000002b20   110 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt3num[...]
+   167: ffffff0000003060   853 FUNC    GLOBAL DEFAULT    4 _ZN4core3fmt9For[...]
+   168: ffffff0000005590   335 FUNC    GLOBAL DEFAULT    4 _ZN4core7unicode[...]
+   169: ffffff0000005470   283 FUNC    GLOBAL DEFAULT    4 _ZN4core7unicode[...]
+   170: ffffff0000004870   934 FUNC    GLOBAL DEFAULT    4 _ZN4core3str5cou[...]
+   171: ffffff0000004ef0     6 FUNC    GLOBAL DEFAULT    4 _ZN4core3str16sl[...]
+   172: ffffff0000004170     6 FUNC    GLOBAL DEFAULT    4 _ZN4core5slice5i[...]
+   173: ffffff0000004180   113 FUNC    GLOBAL DEFAULT    4 _ZN4core5slice5i[...]
+   174: ffffff0000004200   113 FUNC    GLOBAL DEFAULT    4 _ZN4core5slice5i[...]
+   175: ffffff0000004310   654 FUNC    GLOBAL DEFAULT    4 _ZN68_$LT$core..[...]
+   176: ffffff00000045a0    93 FUNC    GLOBAL DEFAULT    4 _ZN68_$LT$core..[...]
+   177: ffffff0000004f00  1094 FUNC    GLOBAL DEFAULT    4 _ZN4core3str19sl[...]
+   178: ffffff0000000000     0 NOTYPE  GLOBAL DEFAULT  ABS KERNEL_BEGIN
+
+No version information found in this file.
