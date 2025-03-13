@@ -14,7 +14,6 @@ pub fn kernel_main(boot_info: &'static boot::BootInfo) -> ! {
 
     loop {
         info!("Hello World from YatSenOS v2!");
-
         for _ in 0..0x10000000 {
             unsafe {
                 asm!("nop");

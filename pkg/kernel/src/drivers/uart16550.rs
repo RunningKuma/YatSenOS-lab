@@ -1,6 +1,24 @@
 use core::fmt;
 use x86_64::instructions::port::{Port, PortReadOnly, PortWriteOnly};
-/// A port-mapped UART 16550 serial interface.
+use bitflags::bitflags;
+
+
+
+bitflags! {
+  pub struct LCR: u8{
+    const word_length_5 = 0b00000000;
+    const word_length_6 = 0b00000001;
+    const word_length_7 = 0b00000010;
+    const word_length_8 = 0b00000011;
+    const stop_bit_1 = 0b00000000;
+    const stop_bit_2 = 0b00000100;
+    const parity_none = 0b00000000;
+    const parity_odd = 0b00001000;
+    const parity_even = 0b00011000;
+    const break_ctrl = 0b01000000;
+    const dlab = 0b10000000;
+  }
+}
 pub struct SerialPort<const BASE_ADDR: u16>{
     port_base_data: Port<u8>,
     interrupt_enable_register: PortWriteOnly<u8>,
