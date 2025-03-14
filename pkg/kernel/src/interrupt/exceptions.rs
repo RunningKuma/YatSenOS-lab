@@ -54,6 +54,7 @@ pub unsafe fn register_idt(idt: &mut InterruptDescriptorTable) {
         idt.security_exception.set_handler_fn(security_exception_handler);
 }
 
+
 pub extern "x86-interrupt" fn divide_error_handler(stack_frame: InterruptStackFrame) {
     panic!("EXCEPTION: DIVIDE ERROR\n\n{:#?}", stack_frame);
 }

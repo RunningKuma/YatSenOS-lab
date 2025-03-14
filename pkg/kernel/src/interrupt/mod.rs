@@ -26,9 +26,14 @@ pub fn init() {
     IDT.load();
 
     // FIXME: check and init APIC
-
+    if XApic::support() {
+        let mut lapic = unsafe { XApic::new(physical_to_virtual(LAPIC_ADDR)) };
+        lapic.cpu_init();
+    } else {
+        panic!("xAPIC not supported");
+    }
     // FIXME: enable serial irq with IO APIC (use enable_irq)
-
+    
     info!("Interrupts Initialized.");
 }
 
