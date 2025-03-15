@@ -10,7 +10,11 @@ boot::entry_point!(kernel_main);
 
 pub fn kernel_main(boot_info: &'static boot::BootInfo) -> ! {
     ysos::init(boot_info);
-
+    // unsafe{
+    //     let pointer:*mut u8 = 0x11451419198 as *mut u8;
+    //     print!("Pointer: {:#x}\n", *pointer);
+    // }
+    
     loop {
         print!("> ");
         let input = input::get_line();
