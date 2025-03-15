@@ -53,7 +53,7 @@ impl<const BASE_ADDR: u16> SerialPort<BASE_ADDR> {
           self.modem_control_register.write(0x0B); // IRQs enabled, RTS/DSR set
           self.modem_control_register.write(0x1E); //set in loopback mode
           self.port_base_data.write(0xAE); //Test serial chip
-        
+          self.interrupt_enable_register.write(0x01); //Enable interrupts
         if self.port_base_data.read() != 0xAE {
             panic!("Serial port test failed");
         }
@@ -64,7 +64,7 @@ impl<const BASE_ADDR: u16> SerialPort<BASE_ADDR> {
     /// Sends a byte on the serial port.
     pub fn send(&mut self, data: u8) {
         unsafe{
-        // FIXME: Send a byte on the serial port
+        // FIXME: Send a byte on the serial port 
         let is_tran_empty = self.line_status_register.read() & 0x20;
         while is_tran_empty == 0 {
             // Wait for the transmit buffer to be empty
@@ -85,10 +85,9 @@ impl<const BASE_ADDR: u16> SerialPort<BASE_ADDR> {
         else{
             None // No data received
         }
-        
-        
     }
-}
+}  
+
 
 }
 impl<const BASE_ADDR:u16> fmt::Write for SerialPort<BASE_ADDR> {

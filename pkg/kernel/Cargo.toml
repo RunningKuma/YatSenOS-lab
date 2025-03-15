@@ -8,7 +8,7 @@ edition.workspace = true
 boot = { workspace = true }
 lazy_static = { workspace = true }
 uefi = { workspace = true }
-crossbeam-queue = { workspace = true }
+crossbeam-queue = { workspace = true, default-features = false, features = ["alloc"]}
 paste = { workspace = true }
 spin = { workspace = true }
 x86 = { workspace = true }
