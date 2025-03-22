@@ -33,6 +33,7 @@ lazy_static = { version = "1.4", features = ["spin_no_std"] }
 bit_field = { version = "0.10", default-features = false }
 crossbeam-queue = { version = "0.3", default-features = false }
 linked_list_allocator = "0.9"
+volatile = { version = "0.6.1"}
 
 # Local dependencies
 
