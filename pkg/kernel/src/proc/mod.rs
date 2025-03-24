@@ -7,11 +7,12 @@ mod process;
 mod processor;
 use manager::*;
 use process::*;
+use vm::ProcessVm;
 use crate::memory::PAGE_SIZE;
-use ProcessVm;
+mod vm;
 
 
-use alloc::string::String;
+use alloc::string::{String, ToString};
 pub use context::ProcessContext;
 pub use paging::PageTableContext;
 pub use data::ProcessData;
@@ -36,7 +37,9 @@ pub fn init() {
     trace!("Init kernel vm: {:#?}", proc_vm);
 
     // kernel process
-    let kproc = { /* FIXME: create kernel process */ };
+    let kproc = { /* FIXME: create kernel process */
+        Process::new("God".to_string(),None,Some(proc_vm),Some(ProcessData::new()))
+     };
     manager::init(kproc);
 
     info!("Process Manager Initialized.");

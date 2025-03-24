@@ -8,7 +8,7 @@ use crate::{humanized_size, memory::*};
 
 pub mod stack;
 
-use self::stack::*;
+use self::stack::Stack;
 
 use super::{PageTableContext, ProcessId};
 
@@ -32,10 +32,11 @@ impl ProcessVm {
     }
 
     pub fn init_kernel_vm(mut self) -> Self {
-        // TODO: record kernel code usage
-        self.stack = Stack::kstack();
-        self
-    }
+            // TODO: record kernel code usage
+            
+            self.stack = Stack::kstack();
+            self
+        }
 
     pub fn init_proc_stack(&mut self, pid: ProcessId) -> VirtAddr {
         // FIXME: calculate the stack for pid
