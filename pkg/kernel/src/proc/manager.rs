@@ -14,7 +14,7 @@ pub fn init(init: Arc<Process>) {
     // FIXME: set init process as Running
     init.write().resume();
     // FIXME: set processor's current pid to init's pid
-    processor::set_pid(init.pid());
+    processor::set_pid(init.pid()); //inspire：不要直接对全局静态对象更改，使用对应的接口进行更改
     PROCESS_MANAGER.call_once(|| ProcessManager::new(init));
 }
 
@@ -65,23 +65,31 @@ impl ProcessManager {
     }
 
     pub fn save_current(&self, context: &ProcessContext) {
-        // FIXME: update current process's tick count
-
-        // FIXME: save current process's context
+        // FIXME: update current process's tick count   √
+        self.current().write().tick();
+        // FIXME: save current process's context      √
+        self.current().write().save(context);
+        
     }
 
     pub fn switch_next(&self, context: &mut ProcessContext) -> ProcessId {
-
-        // FIXME: fetch the next process from ready queue
-
+        // FIXME: fetch the next process from ready queue     √
+        let mut queue = self.ready_queue.lock();
+        let n_pid = &queue.pop_front();
+        let mut n_proc = self.get_proc(&n_pid.unwrap()).unwrap();
         // FIXME: check if the next process is ready,
-        //        continue to fetch if not ready
-
-        // FIXME: restore next process's context
-
-        // FIXME: update processor's current pid
-
-        // FIXME: return next process's pid
+        //        continue to fetch if not ready      √?
+        while n_proc.read().status() != ProgramStatus::Ready {
+            n_proc = self.get_proc(&queue.pop_front().unwrap()).unwrap();
+        }
+        // FIXME: restore next process's context  √
+        n_proc.write().restore(context);
+        // FIXME: update processor's current pid    √
+        processor::set_pid(n_proc.pid());
+        // FIXME: return next process's pid      √
+        drop(queue);
+       // print_process_list();
+        return n_proc.pid();
     }
 
     pub fn spawn_kernel_thread(

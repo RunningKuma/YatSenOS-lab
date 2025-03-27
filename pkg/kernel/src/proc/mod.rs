@@ -7,6 +7,7 @@ mod process;
 mod processor;
 use manager::*;
 use process::*;
+use processor::{get_pid, Processor};
 use vm::ProcessVm;
 use crate::memory::PAGE_SIZE;
 mod vm;
@@ -35,6 +36,7 @@ pub fn init() {
     let proc_vm = ProcessVm::new(PageTableContext::new()).init_kernel_vm();
 
     trace!("Init kernel vm: {:#?}", proc_vm);
+    //TODO:?should set ProcessData?
 
     // kernel process
     let kproc = { /* FIXME: create kernel process */
@@ -43,14 +45,19 @@ pub fn init() {
     manager::init(kproc);
 
     info!("Process Manager Initialized.");
+    print_process_list();
 }
 
 pub fn switch(context: &mut ProcessContext) {
     x86_64::instructions::interrupts::without_interrupts(|| {
         // FIXME: switch to the next process
+        let manager = get_process_manager();
         //      - save current process's context
+        manager.save_current(&context);
         //      - handle ready queue update
+        manager.push_ready(get_pid());
         //      - restore next process's context
+        manager.switch_next(context);
     });
 }
 
@@ -70,6 +77,7 @@ pub fn print_process_list() {
 pub fn env(key: &str) -> Option<String> {
     x86_64::instructions::interrupts::without_interrupts(|| {
         // FIXME: get current process's environment variable
+        get_process_manager().current().read().env(key)
     })
 }
 
@@ -86,5 +94,11 @@ pub fn process_exit(ret: isize) -> ! {
 pub fn handle_page_fault(addr: VirtAddr, err_code: PageFaultErrorCode) -> bool {
     x86_64::instructions::interrupts::without_interrupts(|| {
         get_process_manager().handle_page_fault(addr, err_code)
+    })
+}
+
+pub fn get_return(p_pid: ) -> Option<i32>{
+    x86_64::instructions::interrupts::without_interrupts(|| {
+
     })
 }

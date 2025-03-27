@@ -118,7 +118,8 @@ impl ProcessInner {
     }
 
     pub fn clone_page_table(&self) -> PageTableContext {
-        self.proc_vm.as_ref().unwrap()
+        self.vm().page_table.clone_level_4()
+        //changed
     }
 
     pub fn is_ready(&self) -> bool {
@@ -141,14 +142,21 @@ impl ProcessInner {
     /// mark the process as ready
     pub(super) fn save(&mut self, context: &ProcessContext) {
         // FIXME: save the process's context
+        self.context.save(context); 
+        if self.status != ProgramStatus::Dead {
+            self.status = ProgramStatus::Ready;
+        }
     }
 
     /// Restore the process's context
     /// mark the process as running
     pub(super) fn restore(&mut self, context: &mut ProcessContext) {
         // FIXME: restore the process's context
-
+        self.context.restore(context);
         // FIXME: restore the process's page table
+        let page_table = self.clone_page_table();
+        PageTableContext::load(&page_table);
+        self.resume();
     }
 
     pub fn parent(&self) -> Option<Arc<Process>> {
