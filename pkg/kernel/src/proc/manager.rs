@@ -156,10 +156,16 @@ impl ProcessManager {
 
         // TODO: print memory usage of kernel heap
 
-        output += format!("Queue  : {:?}\n", self.ready_queue.lock()).as_str();
+        output += form  at!("Queue  : {:?}\n", self.ready_queue.lock()).as_str();
 
         output += &processor::print_processors();
 
         print!("{}", output);
+    }
+
+    pub fn pid_return_code(&self,p_pid: ProcessId) -> Option<isize>{
+        x86_64::instructions::interrupts::without_interrupts(|| {
+            self.get_proc(&p_pid).expect("No exist").read().exit_code()
+        })
     }
 }

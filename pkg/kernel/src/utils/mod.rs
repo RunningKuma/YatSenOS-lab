@@ -51,10 +51,10 @@ pub fn new_stack_test_thread() {
 fn wait(pid: ProcessId) {
     loop {
         // FIXME: try to get the status of the process
-
+        let status = get_return(pid);
         // HINT: it's better to use the exit code
 
-        if /* FIXME: is the process exited? */ {
+        if status.is_none()/* FIXME: is the process exited? */ {
             x86_64::instructions::hlt();
         } else {
             break;
