@@ -97,8 +97,9 @@ pub fn handle_page_fault(addr: VirtAddr, err_code: PageFaultErrorCode) -> bool {
     })
 }
 
-pub fn get_return(p_pid: ) -> Option<i32>{
+pub fn get_return(p_pid: ProcessId) -> Option<isize>{
     x86_64::instructions::interrupts::without_interrupts(|| {
-
+      let manager =  get_process_manager();
+      manager.pid_return_code(p_pid)
     })
 }
