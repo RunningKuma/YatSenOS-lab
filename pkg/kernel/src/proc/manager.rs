@@ -159,7 +159,7 @@ impl ProcessManager {
 
         // TODO: print memory usage of kernel heap
 
-        output += form  at!("Queue  : {:?}\n", self.ready_queue.lock()).as_str();
+        output += format!("Queue  : {:?}\n", self.ready_queue.lock()).as_str();
 
         output += &processor::print_processors();
 
