@@ -3,12 +3,14 @@ mod macros;
 #[macro_use]
 mod regs;
 
-pub mod clock;
+pub use crate::interrupt::clock;
 pub mod func;
 pub mod logger;
 
+
 pub use macros::*;
 pub use regs::*;
+
 
 use crate::proc::*;
 
@@ -27,19 +29,19 @@ __  __      __  _____            ____  _____
 }
 
 pub fn new_test_thread(id: &str) -> ProcessId {
-    let proc_data = ProcessData::new();
+    let mut proc_data = ProcessData::new();
     proc_data.set_env("id", id);
-
+    
     spawn_kernel_thread(
-        utils::func::test,
-        format!("#{}_test", id),
+        func::test,
+        alloc::format!("#{}_test", id),
         Some(proc_data),
     )
 }
 
 pub fn new_stack_test_thread() {
     let pid = spawn_kernel_thread(
-        utils::func::stack_test,
+        func::stack_test,
         alloc::string::String::from("stack"),
         None,
     );
@@ -54,7 +56,7 @@ fn wait(pid: ProcessId) {
         let status = get_return(pid);
         // HINT: it's better to use the exit code
 
-        if status.is_none()/* FIXME: is the process exited? */ {
+        if status == None/* FIXME: is the process exited? */ {
             x86_64::instructions::hlt();
         } else {
             break;

@@ -1,3 +1,4 @@
+use super::vm::stack;
 use super::*;
 use crate::memory::*;
 use alloc::sync::{Arc, Weak};
@@ -90,6 +91,7 @@ impl Process {
     pub fn alloc_init_stack(&self) -> VirtAddr {
         self.write().vm_mut().init_proc_stack(self.pid)
     }
+
 }
 
 impl ProcessInner {
@@ -169,6 +171,9 @@ impl ProcessInner {
         // FIXME: set status to dead
 
         // FIXME: take and drop unused resources
+    }
+    pub fn put_into_proc_stack(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
+        self.context.init_stack_frame(entry, stack_top);
     }
 }
 

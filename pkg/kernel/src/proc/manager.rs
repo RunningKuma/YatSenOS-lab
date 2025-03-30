@@ -7,6 +7,8 @@ use crate::memory::{
 use alloc::{collections::*, format, sync::Arc};
 use spin::{Mutex, RwLock};
 
+use elf::map_range;
+
 pub static PROCESS_MANAGER: spin::Once<ProcessManager> = spin::Once::new();
 
 pub fn init(init: Arc<Process>) {
@@ -102,17 +104,18 @@ impl ProcessManager {
         let page_table = kproc.read().clone_page_table();
         let proc_vm = Some(ProcessVm::new(page_table));
         let proc = Process::new(name, Some(Arc::downgrade(&kproc)), proc_vm, proc_data);
-
+        let pid = proc.pid();
         // alloc stack for the new process base on pid
         let stack_top = proc.alloc_init_stack();
 
         // FIXME: set the stack frame
-
+        proc.write().put_into_proc_stack(entry, stack_top);
         // FIXME: add to process map
-
+        self.add_proc(pid,proc);
         // FIXME: push to ready queue
-
+        self.push_ready(pid);
         // FIXME: return new process pid
+        pid
     }
 
     pub fn kill_current(&self, ret: isize) {
@@ -156,7 +159,7 @@ impl ProcessManager {
 
         // TODO: print memory usage of kernel heap
 
-        output += form  at!("Queue  : {:?}\n", self.ready_queue.lock()).as_str();
+        output += format!("Queue  : {:?}\n", self.ready_queue.lock()).as_str();
 
         output += &processor::print_processors();
 
