@@ -56,7 +56,7 @@ fn wait(pid: ProcessId) {
         let status = get_return(pid);
         // HINT: it's better to use the exit code
 
-        if status == None/* FIXME: is the process exited? */ {
+        if status.is_none()/* FIXME: is the process exited? */ {
             x86_64::instructions::hlt();
         } else {
             break;
