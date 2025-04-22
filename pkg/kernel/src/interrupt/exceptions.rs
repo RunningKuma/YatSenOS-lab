@@ -17,7 +17,7 @@ pub unsafe fn register_idt(idt: &mut InterruptDescriptorTable) {
 
         idt.page_fault
             .set_handler_fn(page_fault_handler)
-            .set_stack_index(gdt::PAGE_FAULT_IST_INDEX);
+             .set_stack_index(gdt::PAGE_FAULT_IST_INDEX);
 
         idt.debug.set_handler_fn(debug_handler);
 
@@ -73,12 +73,16 @@ pub extern "x86-interrupt" fn page_fault_handler(
     stack_frame: InterruptStackFrame,
     err_code: PageFaultErrorCode,
 ) {
-    panic!(
-        "EXCEPTION: PAGE FAULT, ERROR_CODE: {:?}\n\nTrying to access: {:#x}\n{:#?}",
-        err_code,
-        Cr2::read().unwrap_or(VirtAddr::new_truncate(0xdeadbeef)),
-        stack_frame
-    );
+    if !crate::proc::handle_page_fault(Cr2::read().unwrap(), err_code) {
+        warn!(
+            "EXCEPTION: PAGE FAULT, ERROR_CODE: {:?}\n\nTrying to access: {:#x}\n{:#?}",
+            err_code,
+            Cr2::read().unwrap(),
+            stack_frame
+        );
+        // FIXME: print info about which process causes page fault?
+        panic!("Cannot handle page fault!");
+    }
 }
 
 pub extern "x86-interrupt" fn debug_handler(stack_frame: InterruptStackFrame) {

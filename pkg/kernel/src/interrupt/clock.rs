@@ -6,7 +6,8 @@ use crate::{memory::gdt, proc::ProcessContext};
 pub unsafe fn register_idt(idt: &mut InterruptDescriptorTable) {
     unsafe{
     idt[Interrupts::IrqBase as u8 + Irq::Timer as u8]
-        .set_handler_fn(process_switcher_handler).set_stack_index(gdt::CLOCK_IST_INDEX);
+        .set_handler_fn(process_switcher_handler)
+        .set_stack_index(gdt::CLOCK_IST_INDEX);
     }
 }
 

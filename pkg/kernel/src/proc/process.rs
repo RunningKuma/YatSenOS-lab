@@ -167,10 +167,13 @@ impl ProcessInner {
 
     pub fn kill(&mut self, ret: isize) {
         // FIXME: set exit code
-
+        self.exit_code = Some(ret);
         // FIXME: set status to dead
-
+        self.status = ProgramStatus::Dead;
         // FIXME: take and drop unused resources
+        self.proc_data = None;
+        self.proc_vm = None;
+        self.context = ProcessContext::default();
     }
     pub fn put_into_proc_stack(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
         self.context.init_stack_frame(entry, stack_top);

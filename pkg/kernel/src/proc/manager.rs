@@ -15,8 +15,9 @@ pub fn init(init: Arc<Process>) {
 
     // FIXME: set init process as Running
     init.write().resume();
-    // FIXME: set processor's current pid to init's pid
+    
     processor::set_pid(init.pid()); //inspire：不要直接对全局静态对象更改，使用对应的接口进行更改
+    // init.write().pause(); //尝试设为ready
     PROCESS_MANAGER.call_once(|| ProcessManager::new(init));
 }
 
@@ -124,8 +125,15 @@ impl ProcessManager {
 
     pub fn handle_page_fault(&self, addr: VirtAddr, err_code: PageFaultErrorCode) -> bool {
         // FIXME: handle page fault
-
-        false
+        
+        if !err_code.contains(PageFaultErrorCode::PROTECTION_VIOLATION) {
+            let proc = self.current();
+            proc.write().handle_page_fault(addr) //交给进程处理，判断是否在栈空间也一并交给它们
+        }
+        else{
+            warn!("This cause by Protection Violation or other reason: {:#x}", addr);
+            return false;
+        }
     }
 
     pub fn kill(&self, pid: ProcessId, ret: isize) {

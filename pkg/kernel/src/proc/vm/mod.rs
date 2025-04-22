@@ -1,5 +1,5 @@
 use alloc::format;
-use stack::STACK_INIT_BOT;
+use stack::{STACK_DEF_PAGE, STACK_INIT_BOT};
 use x86_64::{
     structures::paging::{page::*, *},
     VirtAddr,
@@ -49,7 +49,14 @@ impl ProcessVm {
         
         let stack_top_addr = VirtAddr::new(stack_top);
         
-        elf::map_range(stack_top, 1, page_table, frame_allocator);
+        
+        
+        let _ = elf::map_range(stack_top, STACK_DEF_PAGE, page_table, frame_allocator);
+
+        self.stack = Stack::new(
+            Page::containing_address(stack_top_addr),
+            STACK_DEF_PAGE,
+        );
         stack_top_addr
     }
 

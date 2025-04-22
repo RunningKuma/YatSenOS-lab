@@ -76,7 +76,7 @@ impl Stack {
         mapper: MapperRef,
         alloc: FrameAllocatorRef,
     ) -> bool {
-        if !self.is_on_stack(addr) {
+        if !self.is_on_stack(addr) { //判断是否在栈空间中
             return false;
         }
 
@@ -103,8 +103,17 @@ impl Stack {
         alloc: FrameAllocatorRef,
     ) -> Result<(), MapToError<Size4KiB>> {
         debug_assert!(self.is_on_stack(addr), "Address is not on stack.");
-
+        
         // FIXME: grow stack for page fault
+        let new_page:Page<Size4KiB> = Page::containing_address(addr); //先获取所在页面先
+        let count = self.range.start - new_page; //计算需要分配的页面数
+
+        //老朋友了，分配空间
+        elf::map_range(new_page.start_address().as_u64(), count, mapper, alloc)?;
+        
+        //更新栈的范围
+        self.range = Page::range(new_page, new_page + 1);
+        self.usage = self.range.count() as u64;
 
         Ok(())
     }
