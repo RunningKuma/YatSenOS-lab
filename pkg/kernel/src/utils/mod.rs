@@ -1,26 +1,66 @@
 #[macro_use]
 mod macros;
+#[macro_use]
+mod regs;
 
+pub use crate::interrupt::clock;
+pub mod func;
 pub mod logger;
+
+
 pub use macros::*;
+pub use regs::*;
+
+
+use crate::proc::*;
 
 pub const fn get_ascii_header() -> &'static str {
     concat!(
-        "\x1B[31m",
-        r"__  __      __  _____            ____  _____", "\n",
-        "\x1B[38;5;208m", 
-        r"\ \/ /___ _/ /_/ ___/___  ____  / __ \/ ___/", "\n",
-        "\x1B[33m", 
-        r" \  / __ `/ __/\__ \/ _ \/ __ \/ / / /\__ \ ", "\n",
-        "\x1B[32m", 
-        r" / / /_/ / /_ ___/ /  __/ / / / /_/ /___/ / ", "\n",
-        "\x1B[34m",
-        r"/_/\__,_/\__//____/\___/_/ /_/\____//____/  ", "\n\n",
-        "\x1B[35m",
-        r"          RunningKuma - 22307058       v",
-        env!("CARGO_PKG_VERSION"),
-        "\x1B[0m"
+        r"
+__  __      __  _____            ____  _____
+\ \/ /___ _/ /_/ ___/___  ____  / __ \/ ___/
+ \  / __ `/ __/\__ \/ _ \/ __ \/ / / /\__ \
+ / / /_/ / /_ ___/ /  __/ / / / /_/ /___/ /
+/_/\__,_/\__//____/\___/_/ /_/\____//____/
+
+                                       v",
+        env!("CARGO_PKG_VERSION")
     )
+}
+
+pub fn new_test_thread(id: &str) -> ProcessId {
+    let mut proc_data = ProcessData::new();
+    proc_data.set_env("id", id);
+    
+    spawn_kernel_thread(
+        func::test,
+        alloc::format!("#{}_test", id),
+        Some(proc_data),
+    )
+}
+
+pub fn new_stack_test_thread() {
+    let pid = spawn_kernel_thread(
+        func::stack_test,
+        alloc::string::String::from("stack"),
+        None,
+    );
+
+    // wait for progress exit
+    wait(pid);
+}
+
+fn wait(pid: ProcessId) {
+    loop {
+        // FIXME: try to get the status of the process
+        let status = get_return(pid);
+        // HINT: it's better to use the exit code
+        if status.is_none()/* FIXME: is the process exited? */ {
+            x86_64::instructions::hlt();
+        } else {
+            break;
+        }
+    }
 }
 
 const SHORT_UNITS: [&str; 4] = ["B", "K", "M", "G"];
