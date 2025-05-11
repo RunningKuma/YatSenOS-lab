@@ -7,6 +7,7 @@ pub use uefi::proto::console::gop::{GraphicsOutput, ModeInfo};
 pub use uefi::Status;
 
 use arrayvec::ArrayVec;
+use xmas_elf::ElfFile;
 use core::ptr::NonNull;
 use x86_64::registers::control::Cr3;
 use x86_64::structures::paging::{OffsetPageTable, PageTable};
@@ -34,6 +35,8 @@ pub struct BootInfo {
 
     /// The system table virtual address
     pub system_table: NonNull<core::ffi::c_void>,
+
+    pub loaded_apps: Option<AppList>,
 }
 
 /// Get current page table from CR3
@@ -94,3 +97,18 @@ macro_rules! entry_point {
         }
     };
 }
+
+//app structure
+
+use arrayvec::ArrayString;
+
+const APP_NUM_MAX: usize = 16;
+
+pub struct App<'a>{
+    pub name: ArrayString<APP_NUM_MAX>,
+    pub elf: ElfFile<'a>,
+}
+
+pub type AppList = ArrayVec<App<'static>, APP_NUM_MAX>;
+
+pub type AppListRef = Option<&'static ArrayVec<App<'static>, APP_NUM_MAX>>;

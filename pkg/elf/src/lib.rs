@@ -87,6 +87,7 @@ pub fn load_elf(
     physical_offset: u64,
     page_table: &mut impl Mapper<Size4KiB>,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
+    user_access:bool //fixed: add user_access parameter
 ) -> Result<(), MapToError<Size4KiB>> {
     let file_buf = elf.input.as_ptr();
 
@@ -103,6 +104,7 @@ pub fn load_elf(
             &segment,
             page_table,
             frame_allocator,
+            user_access,
         )?
     }
 
@@ -118,6 +120,7 @@ fn load_segment(
     segment: &program::ProgramHeader,
     page_table: &mut impl Mapper<Size4KiB>,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
+    user_access:bool, //fixed: add user_access parameter
 ) -> Result<(), MapToError<Size4KiB>> {
     trace!("Loading & mapping segment: {:#x?}", segment);
 
@@ -139,6 +142,9 @@ fn load_segment(
     }
     if !segment.flags().is_execute() {
         page_table_flags |= PageTableFlags::NO_EXECUTE; //add flag no-X
+    }
+    if user_access {
+        page_table_flags |= PageTableFlags::USER_ACCESSIBLE; // fixed: user access
     }
 
     trace!("Segment page table flag: {:?}", page_table_flags);

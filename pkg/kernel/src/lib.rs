@@ -18,6 +18,7 @@ extern crate libm;
 
 #[macro_use]
 pub mod utils;
+use proc::list_app;
 pub use utils::*;
 
 #[macro_use]
@@ -46,7 +47,7 @@ pub fn init(boot_info: &'static BootInfo) {
     memory::address::init(boot_info);
     memory::gdt::init(); // init gdt
     memory::allocator::init(); // init kernel heap allocator
-    proc::init();//init proc
+    proc::init(boot_info);//init proc
     interrupt::init(); // init interrupts
     memory::init(boot_info); // init memory manager
 
@@ -54,6 +55,7 @@ pub fn init(boot_info: &'static BootInfo) {
     info!("Interrupts Enabled.");
 
     info!("YatSenOS initialized.");
+    list_app();
 }
 
 pub fn shutdown() -> ! {

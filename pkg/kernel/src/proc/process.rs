@@ -3,6 +3,7 @@ use super::*;
 use crate::memory::*;
 use alloc::sync::{Arc, Weak};
 use alloc::vec::Vec;
+use elf::load_elf;
 use spin::*;
 use x86_64::structures::paging::mapper::MapToError;
 use x86_64::structures::paging::page::PageRange;
@@ -175,9 +176,15 @@ impl ProcessInner {
         self.proc_vm = None;
         self.context = ProcessContext::default();
     }
-    pub fn put_into_proc_stack(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
+    pub fn init_stack_frame(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
         self.context.init_stack_frame(entry, stack_top);
     }
+
+    pub fn load_elf(&mut self, elf: &ElfFile) {
+        self.vm_mut().load_elf(elf)
+        
+    }
+        
 }
 
 impl core::ops::Deref for Process {
