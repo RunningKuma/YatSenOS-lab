@@ -40,26 +40,24 @@ impl ProcessVm {
             self
         }
 
-    pub fn init_proc_stack(&mut self, pid: ProcessId) -> VirtAddr {
-        // FIXME: calculate the stack for pid
-        // FIXME: calculate the stack for pid
-        let frame_allocator = &mut *get_frame_alloc_for_sure();
-        let stack_top = stack::STACK_INIT_TOP - ((pid.0 as u64 - 1)* 0x1_0000_0000);
-        let stack_bot = stack::STACK_INIT_BOT - ((pid.0 as u64 - 1)* 0x1_0000_0000);
-        let page_table = &mut self.page_table.mapper();
+    // pub fn init_proc_stack(&mut self, pid: ProcessId) -> VirtAddr {
+    //     // FIXME: calculate the stack for pid
+    //     // FIXME: calculate the stack for pid
+    //     let frame_allocator = &mut *get_frame_alloc_for_sure();
+    //     let stack_top = stack::STACK_INIT_TOP - ((pid.0 as u64 - 1)* 0x1_0000_0000);
+    //     let stack_bot = stack::STACK_INIT_BOT - ((pid.0 as u64 - 1)* 0x1_0000_0000);
+    //     let page_table = &mut self.page_table.mapper();
         
-        let stack_top_addr = VirtAddr::new(stack_top);
+    //     let stack_top_addr = VirtAddr::new(stack_top);
         
-        
-        
-        let _ = elf::map_range(stack_top, STACK_DEF_PAGE, page_table, frame_allocator);
+    //     let _ = elf::map_range(stack_top, STACK_DEF_PAGE, page_table, frame_allocator,true);
 
-        self.stack = Stack::new(
-            Page::containing_address(stack_top_addr),
-            STACK_DEF_PAGE,
-        );
-        stack_top_addr
-    }
+    //     self.stack = Stack::new(
+    //         Page::containing_address(stack_top_addr),
+    //         STACK_DEF_PAGE,
+    //     );
+    //     stack_top_addr
+    // }
 
     pub fn handle_page_fault(&mut self, addr: VirtAddr) -> bool {
         let mapper = &mut self.page_table.mapper();
@@ -94,6 +92,3 @@ impl core::fmt::Debug for ProcessVm {
             .finish()
     }
 }
-
-
-

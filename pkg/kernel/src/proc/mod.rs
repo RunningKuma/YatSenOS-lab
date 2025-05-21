@@ -14,6 +14,7 @@ use crate::memory::PAGE_SIZE;
 mod vm;
 use xmas_elf::{ElfFile, program};
 
+
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 pub use context::ProcessContext;
@@ -36,6 +37,7 @@ pub enum ProgramStatus {
 /// init process manager
 pub fn init(boot_info: &'static boot::BootInfo) {
     let proc_vm = ProcessVm::new(PageTableContext::new()).init_kernel_vm();
+
 
     trace!("Init kernel vm: {:#?}", proc_vm);
     //TODO:?should set ProcessData?
@@ -65,12 +67,12 @@ pub fn switch(context: &mut ProcessContext) {
     });
 }
 
-pub fn spawn_kernel_thread(entry: fn() -> !, name: String, data: Option<ProcessData>) -> ProcessId {
-    x86_64::instructions::interrupts::without_interrupts(|| {
-        let entry = VirtAddr::new(entry as usize as u64);
-        get_process_manager().spawn_kernel_thread(entry, name, data)
-    })
-}
+// pub fn spawn_kernel_thread(entry: fn() -> !, name: String, data: Option<ProcessData>) -> ProcessId {
+//     x86_64::instructions::interrupts::without_interrupts(|| {
+//         let entry = VirtAddr::new(entry as usize as u64);
+//         get_process_manager().spawn_kernel_thread(entry, name, data)
+//     })
+// }
 
 pub fn print_process_list() {
     x86_64::instructions::interrupts::without_interrupts(|| {
@@ -154,4 +156,40 @@ pub fn elf_spawn(name: String, elf: &ElfFile) -> Option<ProcessId> {
     });
 
     Some(pid)
+}
+
+pub fn read(fd: u8, buf: &mut [u8]) -> isize {
+    x86_64::instructions::interrupts::without_interrupts(|| get_process_manager().read(fd, buf))
+}
+
+pub fn write(fd: u8, buf: &[u8]) -> isize {
+    x86_64::instructions::interrupts::without_interrupts(|| get_process_manager().write(fd, buf))
+}
+
+pub fn exit(ret: isize, context: &mut ProcessContext) {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = get_process_manager();
+        // FIXME: implement this for ProcessManager
+        manager.kill_current(ret);
+        manager.switch_next(context);
+    })
+}
+
+#[inline]
+pub fn still_alive(pid: ProcessId) -> bool {
+    // x86_64::instructions::interrupts::without_interrupts(|| {
+        // check if the process is still alive
+        let manager = get_process_manager();
+        if manager.get_process_status(pid) != ProgramStatus::Dead {
+            true
+        } else {
+            false
+        }
+}
+
+pub fn get_current_pid() -> ProcessId {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        // get current process id
+        get_process_manager().current().pid()
+    })
 }

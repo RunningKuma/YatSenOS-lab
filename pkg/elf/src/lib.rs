@@ -4,6 +4,7 @@
 extern crate log;
 
 use core::ptr::{copy_nonoverlapping, write_bytes};
+use core::slice::RSplit;
 
 use x86_64::structures::paging::page::PageRange;
 use x86_64::structures::paging::{mapper::*, *};
@@ -43,6 +44,7 @@ pub fn map_range(
     count: u64,
     page_table: &mut impl Mapper<Size4KiB>,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
+    user_acccess: bool, //add user_access parameter
 ) -> Result<PageRange, MapToError<Size4KiB>> {
     let range_start = Page::containing_address(VirtAddr::new(addr));
     let range_end = range_start + count;
@@ -54,8 +56,14 @@ pub fn map_range(
     );
 
     // default flags for stack
-    let flags = PageTableFlags::PRESENT | PageTableFlags::WRITABLE;
-
+    let flags = {
+        if user_acccess {
+            PageTableFlags::PRESENT | PageTableFlags::WRITABLE | PageTableFlags::USER_ACCESSIBLE | PageTableFlags::NO_EXECUTE
+        } else {
+            PageTableFlags::PRESENT | PageTableFlags::WRITABLE
+        }
+    };
+    
     for page in Page::range(range_start, range_end) {
         let frame = frame_allocator
             .allocate_frame()

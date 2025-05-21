@@ -74,7 +74,7 @@ lazy_static! {
             stack_end
         };
 
-        tss.interrupt_stack_table[SYSCALL_IST_INDEX as usize] = {
+        tss.interrupt_stack_table[SYSCALL_IST_INDEX as usize] = { //设置独立中断栈
             const STACK_SIZE: usize = IST_SIZES[4];
             static mut STACK: [u8; STACK_SIZE] = [0; STACK_SIZE];
             let stack_start = VirtAddr::from_ptr(addr_of_mut!(STACK));

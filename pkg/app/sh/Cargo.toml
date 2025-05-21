@@ -1,0 +1,13 @@
+[package]
+name = "sh"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+lib = { workspace = true }
+
+[profile.dev]
+panic="abort"
+
+[profile.release]
+panic="abort"

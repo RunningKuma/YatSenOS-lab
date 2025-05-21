@@ -101,29 +101,29 @@ impl ProcessManager {
         return n_proc.pid();
     }
 
-    pub fn spawn_kernel_thread(
-        &self,
-        entry: VirtAddr,
-        name: String,
-        proc_data: Option<ProcessData>,
-    ) -> ProcessId {
-        let kproc = self.get_proc(&KERNEL_PID).unwrap();
-        let page_table = kproc.read().clone_page_table();
-        let proc_vm = Some(ProcessVm::new(page_table));
-        let proc = Process::new(name, Some(Arc::downgrade(&kproc)), proc_vm, proc_data);
-        let pid = proc.pid();
-        // alloc stack for the new process base on pid
-        let stack_top = proc.alloc_init_stack();
+    // pub fn spawn_kernel_thread(
+    //     &self,
+    //     entry: VirtAddr,
+    //     name: String,
+    //     proc_data: Option<ProcessData>,
+    // ) -> ProcessId {
+    //     let kproc = self.get_proc(&KERNEL_PID).unwrap();
+    //     let page_table = kproc.read().clone_page_table();
+    //     let proc_vm = Some(ProcessVm::new(page_table));
+    //     let proc = Process::new(name, Some(Arc::downgrade(&kproc)), proc_vm, proc_data);
+    //     let pid = proc.pid();
+    //     // alloc stack for the new process base on pid
+    //     let stack_top = proc.alloc_init_stack();
 
-        // FIXME: set the stack frame
-        proc.write().init_stack_frame(entry, stack_top);
-        // FIXME: add to process map
-        self.add_proc(pid,proc);
-        // FIXME: push to ready queue
-        self.push_ready(pid);
-        // FIXME: return new process pid
-        pid
-    }
+    //     // FIXME: set the stack frame
+    //     proc.write().init_stack_frame(entry, stack_top);
+    //     // FIXME: add to process map
+    //     self.add_proc(pid,proc);
+    //     // FIXME: push to ready queue
+    //     self.push_ready(pid);
+    //     // FIXME: return new process pid
+    //     pid
+    // }
 
     pub fn kill_current(&self, ret: isize) {
         self.kill(processor::get_pid(), ret);
@@ -131,9 +131,9 @@ impl ProcessManager {
 
     pub fn handle_page_fault(&self, addr: VirtAddr, err_code: PageFaultErrorCode) -> bool {
         // FIXME: handle page fault
-        
-        if !err_code.contains(PageFaultErrorCode::PROTECTION_VIOLATION) {
-            let proc = self.current();
+        let proc = self.current();
+        debug!("err_code: {:#?}", err_code);
+        if !err_code.contains(PageFaultErrorCode::PROTECTION_VIOLATION){
             proc.write().handle_page_fault(addr) //交给进程处理，判断是否在栈空间也一并交给它们
         }
         else{
@@ -197,11 +197,12 @@ impl ProcessManager {
         let page_table = kproc.read().clone_page_table();
         let proc_vm = Some(ProcessVm::new(page_table));
         let proc = Process::new(name, parent, proc_vm, proc_data);
-
+        // let stack_top = proc.alloc_init_stack();
         let mut inner = proc.write();
         // FIXME: load elf to process pagetable
         inner.load_elf(elf);
         // FIXME: alloc new stack for process
+        // let stack_top = proc.alloc_init_stack();
         inner.init_stack_frame(VirtAddr::new_truncate(elf.header.pt2.entry_point()), VirtAddr::new_truncate(STACK_INIT_TOP));
         // FIXME: mark process as ready
         inner.pause();
@@ -214,5 +215,17 @@ impl ProcessManager {
         self.add_proc(pid, proc);
         self.push_ready(pid);
         pid
+    }
+
+    pub fn read(&self, fd: u8, buf: &mut [u8]) -> isize { //add read func
+        self.current().read().read(fd, buf)
+    }
+
+    pub fn write(&self, fd: u8, buf: &[u8]) -> isize { //add write func
+        self.current().read().write(fd, buf)
+    }
+
+    pub fn get_process_status(&self, pid: ProcessId) -> ProgramStatus {
+        self.get_proc(&pid).unwrap().read().status()
     }
 }

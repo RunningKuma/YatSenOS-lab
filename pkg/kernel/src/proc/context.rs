@@ -43,6 +43,7 @@ impl ProcessContext {
     }
 
     pub fn init_stack_frame(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
+        debug!("stack_top: {:#?}", stack_top);
         self.value.stack_frame.stack_pointer = stack_top;
         self.value.stack_frame.instruction_pointer = entry;
         self.value.stack_frame.cpu_flags =

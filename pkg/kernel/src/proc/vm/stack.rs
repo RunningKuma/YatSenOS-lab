@@ -66,7 +66,7 @@ impl Stack {
     pub fn init(&mut self, mapper: MapperRef, alloc: FrameAllocatorRef) {
         debug_assert!(self.usage == 0, "Stack is not empty.");
 
-        self.range = elf::map_range(STACK_INIT_BOT, STACK_DEF_PAGE, mapper, alloc).unwrap();
+        self.range = elf::map_range(STACK_INIT_BOT, STACK_DEF_PAGE, mapper, alloc,true).unwrap();
         self.usage = STACK_DEF_PAGE;
     }
 
@@ -75,6 +75,7 @@ impl Stack {
         addr: VirtAddr,
         mapper: MapperRef,
         alloc: FrameAllocatorRef,
+        
     ) -> bool {
         if !self.is_on_stack(addr) { //判断是否在栈空间中
             return false;
@@ -106,13 +107,14 @@ impl Stack {
         
         // FIXME: grow stack for page fault
         let new_page:Page<Size4KiB> = Page::containing_address(addr); //先获取所在页面先
-        let count = self.range.start - new_page; //计算需要分配的页面数
-
+        let old_bot = self.range.start;
+        let count = old_bot - new_page; //计算需要分配的页面数
         //老朋友了，分配空间
-        elf::map_range(new_page.start_address().as_u64(), count, mapper, alloc)?;
+        elf::map_range(new_page.start_address().as_u64(), count, mapper, alloc,true)?;
         
         //更新栈的范围
-        self.range = Page::range(new_page, new_page + 1);
+        let old_top = self.range.end;
+        self.range = Page::range(new_page, old_top);
         self.usage = self.range.count() as u64;
 
         Ok(())
