@@ -8,17 +8,20 @@ use x86_64::structures::paging::{
 use super::*;
 use crate::resource::ResourceSet;
 #[derive(Debug, Clone)]
-pub struct ProcessData {
+pub struct 
+ProcessData {
     // shared data
     pub(super) env: Arc<RwLock<BTreeMap<String, String>>>,
     pub(super) resources: Arc<RwLock<ResourceSet>>, //fixed: add resources
+
 }
 
 impl Default for ProcessData {
     fn default() -> Self {
         Self {
             env: Arc::new(RwLock::new(BTreeMap::new())),
-            resources: Arc::new(RwLock::new(ResourceSet::default()))  //fixed: init
+            resources: Arc::new(RwLock::new(ResourceSet::default())),  //fixed: init
+
         }
     }
 }
@@ -43,6 +46,5 @@ impl ProcessData {
     pub fn write(&self, fd: u8, buf: &[u8]) -> isize {  //implement write
         self.resources.read().write(fd, buf)
     }
-
 }
 

@@ -69,7 +69,7 @@ fn main() -> isize {
             }
         }
     }
-    0
+    sys_exit(0);
 }
 
 entry!(main);

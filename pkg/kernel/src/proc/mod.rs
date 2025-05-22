@@ -125,13 +125,13 @@ pub fn list_app() {
             .iter()
             .map(|app| app.name.as_str())
             .collect::<Vec<&str>>()
-            .join(", ");
+            .join(" | ");
 
         // TODO: print more information like size, entry point, etc.
-        // let app_size = app_list.unwrap()
-        // print!("Apps info:\n app size:{}\n, entry point: {:#x?}\n", );
+
 
         println!("[+] App list: {}", apps);
+        
     });
 }
 
