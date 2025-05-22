@@ -21,19 +21,19 @@ impl log::Log for Logger {
         if self.enabled(record.metadata()){
             match record.level() {
                 log::Level::Error => 
-                    println!("\x1B[31m[ERROR] - at {}，Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()), // 红色
+                    println!("\x1B[31m[ERROR] - at {} , Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()), // 红色
                 
                 log::Level::Warn => 
-                    println!("\x1B[33m[WARN] - at {}，Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()),
+                    println!("\x1B[33m[WARN] - at {} , Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()),
                 
                 log::Level::Info => 
-                    println!("\x1B[32m[INFO]\x1B[0m- at {}，Line {} :{}",record.file_static().unwrap(),record.line().unwrap(),record.args()), 
+                    println!("\x1B[32m[INFO]\x1B[0m- at {} , Line {} :{}",record.file_static().unwrap(),record.line().unwrap(),record.args()), 
                 
                 log::Level::Debug => 
-                    println!("\x1B[36m[DEBUG] - at {}，Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()),
+                    println!("\x1B[36m[DEBUG] - at {} , Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()),
                 
                 log::Level::Trace => 
-                    println!("\x1B[90m[TRACE] - at {}，Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()),
+                    println!("\x1B[90m[TRACE] - at {} , Line {}: {} \x1B[0m",record.file_static().unwrap(),record.line().unwrap(),record.args()),
             }
         }
     }

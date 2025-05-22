@@ -82,7 +82,8 @@ fn efi_main() -> Status {
         config.physical_memory_offset,
         &mut page_table,
         &mut UEFIFrameAllocator,
-    ).unwrap();
+        false 
+    ).expect("Fail to load and map kernel elf file");
     // FIXME: map kernel stack
     map_range(
         config.kernel_stack_address,
@@ -91,8 +92,18 @@ fn efi_main() -> Status {
             _ => config.kernel_stack_auto_grow / 4096,
         },
         &mut page_table,
-        &mut UEFIFrameAllocator,
+        &mut UEFIFrameAllocator, 
+        false
     ).unwrap();
+
+    //load apps...is it right to be here?    
+    let apps = if config.load_apps {
+        info!("Loading apps...");
+        Some(load_apps())
+    } else {
+        info!("Skip loading apps...");
+        None
+    };
 
     // FIXME: recover write protect (Cr0)
     unsafe {
@@ -115,6 +126,7 @@ fn efi_main() -> Status {
         memory_map: mmap.entries().copied().collect(),
         physical_memory_offset: config.physical_memory_offset,
         system_table,
+        loaded_apps: apps,
     };
 
     // align stack to 8 bytes

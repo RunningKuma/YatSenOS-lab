@@ -15,6 +15,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
+name = "bad_app"
+version = "0.4.0"
+dependencies = [
+ "yslib",
+]
+
+[[package]]
 name = "bit_field"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -54,12 +61,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
+name = "factorial"
+version = "0.4.0"
+dependencies = [
+ "yslib",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 dependencies = [
- "spin",
+ "spin 0.9.8",
 ]
 
 [[package]]
@@ -70,9 +84,9 @@ checksum = "8355be11b20d696c8f18f6cc018c4e372165b1fa8126cef092399c9951984ffa"
 
 [[package]]
 name = "linked_list_allocator"
-version = "0.9.1"
+version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "549ce1740e46b291953c4340adcd74c59bcf4308f4cac050fd33ba91b7168f4a"
+checksum = "9afa463f5405ee81cdb9cc2baf37e08ec7e4c8209442b5d72c04cfb2cd6e6286"
 dependencies = [
  "spinning_top",
 ]
@@ -92,6 +106,26 @@ name = "log"
 version = "0.4.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30bde2b3dc3671ae49d8e2e9f044c7c005836e7a023ee57cffa25ab82764bb9e"
+
+[[package]]
+name = "num_enum"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e613fc340b2220f734a8595782c551f1250e969d87d3be1ae0579e8d4065179"
+dependencies = [
+ "num_enum_derive",
+]
+
+[[package]]
+name = "num_enum_derive"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af1844ef2428cc3e1cb900be36181049ef3d3193c63e43026cfe202983b27a56"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "paste"
@@ -159,10 +193,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
+name = "sh"
+version = "0.4.0"
+dependencies = [
+ "yslib",
+]
+
+[[package]]
 name = "spin"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
+
+[[package]]
+name = "spin"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d5fe4ccb98d9c292d56fec89a5e07da7fc4cf0dc11e156b41793132775d3e591"
 dependencies = [
  "lock_api",
 ]
@@ -282,16 +329,23 @@ dependencies = [
 
 [[package]]
 name = "xmas-elf"
-version = "0.9.1"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42c49817e78342f7f30a181573d82ff55b88a35f86ccaf07fc64b3008f56d1c6"
+checksum = "18245fcbb8b3de8dd198ce7944fdd4096986fd6cd306b0fcfa27df817bd545d6"
 dependencies = [
  "zero",
 ]
 
 [[package]]
+name = "yslib"
+version = "0.4.0"
+dependencies = [
+ "ysos_syscall",
+]
+
+[[package]]
 name = "ysos_boot"
-version = "0.1.0"
+version = "0.4.0"
 dependencies = [
  "arrayvec",
  "log",
@@ -303,7 +357,7 @@ dependencies = [
 
 [[package]]
 name = "ysos_elf"
-version = "0.1.0"
+version = "0.4.0"
 dependencies = [
  "log",
  "x86_64",
@@ -311,8 +365,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ysos_hello"
+version = "0.4.0"
+dependencies = [
+ "yslib",
+]
+
+[[package]]
 name = "ysos_kernel"
-version = "0.1.0"
+version = "0.4.0"
 dependencies = [
  "bit_field",
  "bitflags 2.9.0",
@@ -322,13 +383,22 @@ dependencies = [
  "linked_list_allocator",
  "log",
  "paste",
- "spin",
+ "spin 0.10.0",
  "uefi",
  "volatile 0.6.1",
  "x86",
  "x86_64",
+ "xmas-elf",
  "ysos_boot",
  "ysos_elf",
+ "ysos_syscall",
+]
+
+[[package]]
+name = "ysos_syscall"
+version = "0.4.0"
+dependencies = [
+ "num_enum",
 ]
 
 [[package]]

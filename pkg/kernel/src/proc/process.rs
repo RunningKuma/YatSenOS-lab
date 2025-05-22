@@ -3,7 +3,9 @@ use super::*;
 use crate::memory::*;
 use alloc::sync::{Arc, Weak};
 use alloc::vec::Vec;
+use elf::load_elf;
 use spin::*;
+use uefi::proto::debug;
 use x86_64::structures::paging::mapper::MapToError;
 use x86_64::structures::paging::page::PageRange;
 use x86_64::structures::paging::*;
@@ -88,9 +90,11 @@ impl Process {
         inner.kill(ret);
     }
 
-    pub fn alloc_init_stack(&self) -> VirtAddr {
-        self.write().vm_mut().init_proc_stack(self.pid)
-    }
+    // pub fn alloc_init_stack(&self) -> VirtAddr {
+    //     let p = self.write().vm_mut().init_proc_stack(self.pid);
+    //     debug!("init_stack_top: {:#x} ", p);
+    //     p
+    // }
 
 }
 
@@ -138,6 +142,7 @@ impl ProcessInner {
 
     pub fn handle_page_fault(&mut self, addr: VirtAddr) -> bool {
         self.vm_mut().handle_page_fault(addr)
+        
     }
 
     /// Save the process's context
@@ -156,8 +161,7 @@ impl ProcessInner {
         // FIXME: restore the process's context
         self.context.restore(context);
         // FIXME: restore the process's page table
-        let page_table = self.clone_page_table();
-        PageTableContext::load(&page_table);
+        self.vm().page_table.load();
         self.resume();
     }
 
@@ -171,13 +175,18 @@ impl ProcessInner {
         // FIXME: set status to dead
         self.status = ProgramStatus::Dead;
         // FIXME: take and drop unused resources
-        self.proc_data = None;
-        self.proc_vm = None;
-        self.context = ProcessContext::default();
+        self.proc_data.take();
+        self.proc_vm.take();
     }
-    pub fn put_into_proc_stack(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
+    pub fn init_stack_frame(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
         self.context.init_stack_frame(entry, stack_top);
     }
+
+    pub fn load_elf(&mut self, elf: &ElfFile) {
+        self.vm_mut().load_elf(elf)
+    }
+
+        
 }
 
 impl core::ops::Deref for Process {
