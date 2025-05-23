@@ -6,6 +6,8 @@ use crate::utils::*;
 use super::SyscallArgs;
 
 
+
+
 pub fn spawn_process(args: &SyscallArgs) -> usize {
     // FIXME: get app name by args
     //       - core::str::from_utf8_unchecked
@@ -104,4 +106,19 @@ pub fn sys_list_app() {
 
 pub fn sys_list_proc(){
     list_process();
+}
+
+pub fn fork(context:& mut ProcessContext) {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = crate::proc::manager::get_process_manager();
+        // FIXME: save_current as parent
+        let parent = manager.current();
+        manager.save_current(context);
+        // FIXME: fork to get child
+        manager.fork(); //委托给manager
+        // FIXME: push to child & parent to ready queue
+        manager.push_ready(parent.pid());
+        // FIXME: switch to next process
+        manager.switch_next(context);
+    })
 }

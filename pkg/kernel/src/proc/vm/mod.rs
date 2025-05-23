@@ -79,6 +79,19 @@ impl ProcessVm {
         _ = elf::load_elf(elf, *PHYSICAL_OFFSET.get().unwrap(), mapper, alloc, true);
        
     }
+    pub fn fork(&self, stack_offset_count: u64) -> Self {
+        // clone the page table context (see instructions)
+        let owned_page_table = self.page_table.fork();
+
+        let mapper = &mut owned_page_table.mapper();
+        let alloc = &mut *get_frame_alloc_for_sure();
+
+        Self {
+            page_table: owned_page_table,
+            stack: self.stack.fork(mapper, alloc, stack_offset_count),
+        }
+    }
+
 }
 
 impl core::fmt::Debug for ProcessVm {

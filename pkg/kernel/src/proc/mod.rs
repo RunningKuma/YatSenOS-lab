@@ -1,6 +1,6 @@
 mod context;
 mod data;
-mod manager;
+pub(crate) mod manager;
 mod paging;
 mod pid;
 mod process;

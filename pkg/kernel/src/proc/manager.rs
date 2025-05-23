@@ -78,7 +78,6 @@ impl ProcessManager {
         self.current().write().tick();
         // FIXME: save current process's context      √
         self.current().write().save(context);
-        
     }
 
     pub fn switch_next(&self, context: &mut ProcessContext) -> ProcessId {
@@ -227,5 +226,18 @@ impl ProcessManager {
 
     pub fn get_process_status(&self, pid: ProcessId) -> ProgramStatus {
         self.get_proc(&pid).unwrap().read().status()
+    }
+
+    pub fn fork(&self) {
+        // FIXME: get current process
+        let proc = self.current();
+        // FIXME: fork to get child
+        let child = proc.fork(); //委托给当前进程
+        let child_pid = child.pid();
+        // FIXME: add child to process list
+        self.add_proc(child_pid, child);
+        self.push_ready(child_pid);
+        // FOR DBG: maybe print the process ready queue?
+        debug!("Process ready queue: {:?}", self.ready_queue.lock());
     }
 }

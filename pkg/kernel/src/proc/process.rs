@@ -89,6 +89,34 @@ impl Process {
 
         inner.kill(ret);
     }
+    
+    pub fn fork(self: &Arc<Self>) -> Arc<Self> {
+            // FIXME: lock inner as write
+        let mut inner = self.write();
+            // FIXME: inner fork with parent weak ref
+        let child_inner = inner.fork(Arc::downgrade(self)); //具体实现委托给inner，获取Weak引用避免循环
+            // FOR DBG: maybe print the child process info
+            //          e.g. parent, name, pid, etc.
+        debug!("Forking process {}#{} to {} \n ",
+            inner.name(),
+            self.pid,
+            child_inner.name
+        );
+            // FIXME: make the arc of child
+        let child = Arc::new(Process {
+            pid: ProcessId::new(),
+            inner: Arc::new(RwLock::new(child_inner))
+        });
+         //DEBUG
+            // FIXME: add child to current process's children list
+        inner.children.push(child.clone());
+            // FIXME: set fork ret value for parent with `context.set_rax`
+        inner.context.set_rax(child.pid.0 as usize);
+            // FIXME: mark the child as ready & return it
+        inner.pause();
+        child.write().status = ProgramStatus::Ready;
+        child
+    }
 
     // pub fn alloc_init_stack(&self) -> VirtAddr {
     //     let p = self.write().vm_mut().init_proc_stack(self.pid);
@@ -184,6 +212,33 @@ impl ProcessInner {
 
     pub fn load_elf(&mut self, elf: &ElfFile) {
         self.vm_mut().load_elf(elf)
+    }
+
+    pub fn fork(&mut self, parent: Weak<Process>) -> ProcessInner {
+        // FIXME: fork the process virtual memory struct
+        let child_proc_vm = self.vm().fork(self.children.len() as u64 + 1);
+        // FIXME: calculate the real stack offset
+        let offset = child_proc_vm.stack.count_stack_offset(&self.vm().stack);
+        let mut child_context = self.context.clone();
+        // FIXME: update `rsp` in interrupt stack frame
+        child_context.set_rsp(offset); 
+        // FIXME: set the return value 0 for child with `context.set_rax`
+        child_context.set_rax(0);
+        // FIXME: clone the process data struct
+        let child_proc_data = self.proc_data.clone();
+        // FIXME: construct the child process inner
+        Self { 
+            name: self.name.clone(), 
+            parent: Some(parent), 
+            children: Vec::new(), 
+            ticks_passed: 0, 
+            status: ProgramStatus::Ready, 
+            context: child_context, 
+            exit_code: None, 
+            proc_data: child_proc_data, 
+            proc_vm: Some(child_proc_vm), 
+        }
+        // NOTE: return inner because there's no pid record in inner
     }
 
         

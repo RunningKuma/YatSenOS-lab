@@ -42,6 +42,11 @@ impl ProcessContext {
         context.as_mut().as_mut_ptr().write(self.value);
     }
 
+    #[inline]
+    pub fn set_rsp(&mut self, offset: u64) {
+        self.value.stack_frame.stack_pointer += offset;
+    }
+
     pub fn init_stack_frame(&mut self, entry: VirtAddr, stack_top: VirtAddr) {
         debug!("stack_top: {:#?}", stack_top);
         self.value.stack_frame.stack_pointer = stack_top;
@@ -60,6 +65,8 @@ impl ProcessContext {
 
         trace!("Init stack frame: {:#?}", &self.stack_frame);
     }
+
+
 }
 
 impl Default for ProcessContextValue {
