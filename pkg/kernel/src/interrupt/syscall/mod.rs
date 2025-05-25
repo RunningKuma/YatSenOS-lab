@@ -73,7 +73,7 @@ pub fn dispatcher(context: &mut ProcessContext) {
         },
         // pid: arg0 as u16 -> status: isize
         Syscall::WaitPid => { /* FIXME: check if the process is running or get retcode */
-            context.set_rax(sys_waitpid(&args) as usize);
+           sys_waitpid(&args, context); //fix to fit lab0x05
         },
         // None -> pid: u16 or 0 or -1
         Syscall::Fork => {

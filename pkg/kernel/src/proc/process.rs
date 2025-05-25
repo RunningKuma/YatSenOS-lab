@@ -111,9 +111,8 @@ impl Process {
             // FIXME: add child to current process's children list
         inner.children.push(child.clone());
             // FIXME: set fork ret value for parent with `context.set_rax`
-        inner.context.set_rax(child.pid.0 as usize);
+        inner.context.set_rax(child.pid.0 as usize); //在这里设置父进程的返回值
             // FIXME: mark the child as ready & return it
-        inner.pause();
         child.write().status = ProgramStatus::Ready;
         child
     }
@@ -145,6 +144,10 @@ impl ProcessInner {
 
     pub fn resume(&mut self) {
         self.status = ProgramStatus::Running;
+    }
+
+    pub fn block(&mut self) {
+    self.status = ProgramStatus::Blocked;
     }
 
     pub fn exit_code(&self) -> Option<isize> {
@@ -240,8 +243,9 @@ impl ProcessInner {
         }
         // NOTE: return inner because there's no pid record in inner
     }
-
-        
+    pub fn set_exit_code(&mut self, ret: isize){
+        self.context.set_rax(ret as usize);
+    } 
 }
 
 impl core::ops::Deref for Process {

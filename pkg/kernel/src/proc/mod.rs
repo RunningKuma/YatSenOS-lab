@@ -193,3 +193,17 @@ pub fn get_current_pid() -> ProcessId {
         get_process_manager().current().pid()
     })
 }
+
+pub fn wait_pid(pid: ProcessId, context: &mut ProcessContext) {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = get_process_manager();
+        if let Some(ret) = manager.pid_return_code(pid) {
+            context.set_rax(ret as usize);
+        } else {
+            manager.wait_pid(pid);
+            manager.save_current(context);
+            manager.current().write().block();
+            manager.switch_next(context);
+        }
+    })
+}

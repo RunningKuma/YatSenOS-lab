@@ -2,6 +2,7 @@ use core::alloc::Layout;
 
 use crate::proc::*;
 use crate::utils::*;
+use crate::wait;
 
 use super::SyscallArgs;
 
@@ -89,15 +90,9 @@ pub fn sys_getpid() -> u16 {
         get_current_pid().0
 }
 
-pub fn sys_waitpid(args: &SyscallArgs) -> isize {
+pub fn sys_waitpid(args: &SyscallArgs, context:& mut ProcessContext) {//-> isize 
     let pid = ProcessId(args.arg0 as u16);
-    let ret = get_return(pid);
-    if !ret.is_none() {
-        ret.unwrap() as isize
-    } else {
-        -1   
-    }
-        
+    wait_pid(pid, context);
 }
 
 pub fn sys_list_app() {
