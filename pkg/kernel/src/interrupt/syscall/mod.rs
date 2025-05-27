@@ -87,7 +87,9 @@ pub fn dispatcher(context: &mut ProcessContext) {
         Syscall::ListApp => { /* FIXME: list available apps */
             sys_list_app();
         },
-
+        // op: u8, key: u32, val: usize -> ret: any
+        Syscall::Sem => sys_sem(&args, context),
+        
         // ----------------------------------------------------
         // NOTE: following syscall examples are implemented
         // ----------------------------------------------------

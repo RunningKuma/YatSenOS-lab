@@ -10,6 +10,7 @@ pub enum Syscall {
     Read = 0,
     Write = 1,
 
+    Sem = 37,
     GetPid = 39,
     Fork = 58,
     Spawn = 59,

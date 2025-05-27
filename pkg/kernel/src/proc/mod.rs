@@ -5,6 +5,7 @@ mod paging;
 mod pid;
 mod process;
 mod processor;
+mod sync;
 use alloc::sync::Arc;
 use manager::*;
 use process::*;
@@ -13,7 +14,7 @@ use vm::ProcessVm;
 use crate::memory::PAGE_SIZE;
 mod vm;
 use xmas_elf::{ElfFile, program};
-
+use sync::*;
 
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
@@ -204,6 +205,53 @@ pub fn wait_pid(pid: ProcessId, context: &mut ProcessContext) {
             manager.save_current(context);
             manager.current().write().block();
             manager.switch_next(context);
+        }
+    })
+}
+pub fn new_sem(key: u32, init_value: usize) -> usize {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = get_process_manager();
+        manager.current().write().new_sem(key, init_value) as usize
+    })
+}
+
+pub fn remove_sem(key: u32) -> usize {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = get_process_manager();
+        manager.current().write().remove_sem(key) as usize
+    })
+}
+
+pub fn sem_signal(key: u32, context: &mut ProcessContext) {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = get_process_manager();
+        let ret = manager.current().write().sem_signal(key);
+        match ret {
+            SemaphoreResult::Ok => context.set_rax(0),
+            SemaphoreResult::NotExist => context.set_rax(1),
+            SemaphoreResult::WakeUp(pid) => manager.wake_up(pid, None),
+            _ => unreachable!(),
+        }
+    });
+}
+
+
+pub fn sem_wait(key: u32, context: &mut ProcessContext) {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = get_process_manager();
+        let pid = processor::get_pid();
+        let ret = manager.current().write().sem_wait(key, pid);
+        match ret {
+            SemaphoreResult::Ok => context.set_rax(0),
+            SemaphoreResult::NotExist => context.set_rax(1),
+            SemaphoreResult::Block(pid) => {
+                // FIXME: save, block it, then switch to next
+                //        use `save_current` and `switch_next`   //fixed
+                manager.save_current(context);
+                manager.block(pid);
+                manager.switch_next(context);
+            }
+            _ => unreachable!(),
         }
     })
 }

@@ -7,8 +7,6 @@ use crate::wait;
 use super::SyscallArgs;
 
 
-
-
 pub fn spawn_process(args: &SyscallArgs) -> usize {
     // FIXME: get app name by args
     //       - core::str::from_utf8_unchecked
@@ -117,3 +115,16 @@ pub fn fork(context:& mut ProcessContext) {
         manager.switch_next(context);
     })
 }
+
+pub fn sys_sem(args: &SyscallArgs, context: &mut ProcessContext) {
+    match args.arg0 {
+        0 => context.set_rax(new_sem(args.arg1 as u32, args.arg2)),
+        1 => context.set_rax(remove_sem(args.arg1 as u32)),
+        2 => sem_signal(args.arg1 as u32, context),
+        3 => sem_wait(args.arg1 as u32, context),
+        _ => context.set_rax(usize::MAX),
+    }
+}
+
+
+

@@ -9,6 +9,7 @@ use uefi::proto::debug;
 use x86_64::structures::paging::mapper::MapToError;
 use x86_64::structures::paging::page::PageRange;
 use x86_64::structures::paging::*;
+use sync::*;
 
 #[derive(Clone)]
 pub struct Process {
@@ -246,6 +247,25 @@ impl ProcessInner {
     pub fn set_exit_code(&mut self, ret: isize){
         self.context.set_rax(ret as usize);
     } 
+
+    //semaphores as follows:
+    pub fn new_sem(&mut self, key: u32, value: usize) -> bool {
+        self.semaphores.write().insert(key, value)
+    }
+
+    pub fn remove_sem(&mut self, key: u32) -> bool {
+        self.semaphores.write().remove(key)
+    }
+
+    pub fn sem_wait(&mut self, key: u32, pid: ProcessId) -> SemaphoreResult{
+        self.semaphores.read().wait(key, pid)
+    }
+
+    pub fn sem_signal(&mut self, key: u32) -> SemaphoreResult {
+        self.semaphores.write().signal(key)
+    }
+
+
 }
 
 impl core::ops::Deref for Process {
