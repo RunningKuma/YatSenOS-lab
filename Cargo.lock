@@ -61,6 +61,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
+name = "dinner"
+version = "0.4.0"
+dependencies = [
+ "yslib",
+]
+
+[[package]]
 name = "factorial"
 version = "0.4.0"
 dependencies = [
@@ -113,6 +120,13 @@ name = "log"
 version = "0.4.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30bde2b3dc3671ae49d8e2e9f044c7c005836e7a023ee57cffa25ab82764bb9e"
+
+[[package]]
+name = "mq"
+version = "0.4.0"
+dependencies = [
+ "yslib",
+]
 
 [[package]]
 name = "num_enum"

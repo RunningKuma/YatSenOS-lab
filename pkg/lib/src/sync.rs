@@ -52,14 +52,14 @@ impl Semaphore {
 
     /* FIXME: other functions with syscall... */
     #[inline(always)]
-    pub fn release(&self) {
+    pub fn signal(&self) {
         while sys_sem_signal(self.key) != 0 {
             spin_loop();
         }
     }
 
     #[inline(always)]
-    pub fn acquire(&self) {
+    pub fn wait(&self) {
         while sys_sem_wait(self.key) != 0 {
             spin_loop();
         }

@@ -61,9 +61,9 @@ fn do_counter_inc() {
 
 fn do_counter_inc_sem() {
     for _ in 0..100 {
-        SEMAPHORE.acquire();
+        SEMAPHORE.wait();
         inc_counter();
-        SEMAPHORE.release();
+        SEMAPHORE.signal();
     }
 }
 
