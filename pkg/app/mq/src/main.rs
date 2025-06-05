@@ -7,7 +7,7 @@ use lib::*;
 
 extern crate lib;
 
-const QUEUE_CAP_COUNT: usize = 1;
+const QUEUE_CAP_COUNT: usize = 16;
 static mut COUNT: usize = 0;
 static FULL: Semaphore = Semaphore::new(100);
 static EMPTY: Semaphore = Semaphore::new(200);

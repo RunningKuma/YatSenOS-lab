@@ -10,7 +10,7 @@ static mut COUNTER: isize = 0;
 static LOCKER: SpinLock = SpinLock::new();
 static SEMAPHORE: Semaphore = Semaphore::new(0);
 
-fn main() -> isize {
+fn main() {
     let pid = sys_fork();
 
     if pid == 0 {
