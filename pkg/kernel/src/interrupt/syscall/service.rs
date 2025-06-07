@@ -2,6 +2,7 @@ use core::alloc::Layout;
 
 use crate::proc::*;
 use crate::utils::*;
+use crate::wait;
 
 use super::SyscallArgs;
 
@@ -87,15 +88,9 @@ pub fn sys_getpid() -> u16 {
         get_current_pid().0
 }
 
-pub fn sys_waitpid(args: &SyscallArgs) -> isize {
+pub fn sys_waitpid(args: &SyscallArgs, context:& mut ProcessContext) {//-> isize 
     let pid = ProcessId(args.arg0 as u16);
-    let ret = get_return(pid);
-    if !ret.is_none() {
-        ret.unwrap() as isize
-    } else {
-        -1   
-    }
-        
+    wait_pid(pid, context);
 }
 
 pub fn sys_list_app() {
@@ -105,3 +100,31 @@ pub fn sys_list_app() {
 pub fn sys_list_proc(){
     list_process();
 }
+
+pub fn fork(context:& mut ProcessContext) {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        let manager = crate::proc::manager::get_process_manager();
+        // FIXME: save_current as parent
+        let parent = manager.current();
+        manager.save_current(context);
+        // FIXME: fork to get child
+        manager.fork(); //委托给manager
+        // FIXME: push to child & parent to ready queue
+        manager.push_ready(parent.pid());
+        // FIXME: switch to next process
+        manager.switch_next(context);
+    })
+}
+
+pub fn sys_sem(args: &SyscallArgs, context: &mut ProcessContext) {
+    match args.arg0 {
+        0 => context.set_rax(new_sem(args.arg1 as u32, args.arg2)),
+        1 => context.set_rax(remove_sem(args.arg1 as u32)),
+        2 => sem_signal(args.arg1 as u32, context),
+        3 => sem_wait(args.arg1 as u32, context),
+        _ => context.set_rax(usize::MAX),
+    }
+}
+
+
+

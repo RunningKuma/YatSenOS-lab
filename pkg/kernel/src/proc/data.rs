@@ -5,6 +5,7 @@ use x86_64::structures::paging::{
     Page,
 };
 
+use crate::proc::sync::SemaphoreSet;
 use super::*;
 use crate::resource::ResourceSet;
 #[derive(Debug, Clone)]
@@ -13,7 +14,7 @@ ProcessData {
     // shared data
     pub(super) env: Arc<RwLock<BTreeMap<String, String>>>,
     pub(super) resources: Arc<RwLock<ResourceSet>>, //fixed: add resources
-
+    pub(super) semaphores: Arc<RwLock<SemaphoreSet>>,
 }
 
 impl Default for ProcessData {
@@ -21,7 +22,7 @@ impl Default for ProcessData {
         Self {
             env: Arc::new(RwLock::new(BTreeMap::new())),
             resources: Arc::new(RwLock::new(ResourceSet::default())),  //fixed: init
-
+            semaphores: Arc::new(RwLock::new(SemaphoreSet::default())), //fixed: init
         }
     }
 }
@@ -46,5 +47,6 @@ impl ProcessData {
     pub fn write(&self, fd: u8, buf: &[u8]) -> isize {  //implement write
         self.resources.read().write(fd, buf)
     }
+
 }
 
