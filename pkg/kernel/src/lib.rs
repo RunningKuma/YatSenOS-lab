@@ -25,8 +25,8 @@ pub use utils::*;
 pub mod drivers;
 pub use drivers::*;
 
-pub mod memory;
 pub mod interrupt;
+pub mod memory;
 
 pub use alloc::format;
 
@@ -34,7 +34,6 @@ pub mod proc;
 
 use boot::BootInfo;
 use uefi::{Status, runtime::ResetType};
-
 
 pub fn init(boot_info: &'static BootInfo) {
     unsafe {
@@ -47,7 +46,7 @@ pub fn init(boot_info: &'static BootInfo) {
     memory::address::init(boot_info);
     memory::gdt::init(); // init gdt
     memory::allocator::init(); // init kernel heap allocator
-    proc::init(boot_info);//init proc
+    proc::init(boot_info); //init proc
     interrupt::init(); // init interrupts
     memory::init(boot_info); // init memory manager
 

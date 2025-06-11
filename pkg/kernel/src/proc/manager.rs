@@ -1,25 +1,33 @@
 use super::*;
-use crate::{memory::{
-    self,
-    allocator::{ALLOCATOR, HEAP_SIZE},
-    get_frame_alloc_for_sure, PAGE_SIZE,
-}, proc::vm::stack::STACK_INIT_TOP};
-use alloc::{collections::*, format, sync::{Arc, Weak}};
+use crate::{
+    memory::{
+        self, PAGE_SIZE,
+        allocator::{ALLOCATOR, HEAP_SIZE},
+        get_frame_alloc_for_sure,
+    },
+    proc::vm::stack::STACK_INIT_TOP,
+};
+use alloc::{
+    collections::*,
+    format,
+    sync::{Arc, Weak},
+};
 use spin::{Mutex, RwLock};
 
-use elf::map_range;
 use boot::*;
+use elf::map_range;
 
 pub static PROCESS_MANAGER: spin::Once<ProcessManager> = spin::Once::new();
 
-pub fn init(init: Arc<Process>, app_list: AppListRef) { //fixed:add app_list arg
+pub fn init(init: Arc<Process>, app_list: AppListRef) {
+    //fixed:add app_list arg
 
     // FIXME: set init process as Running
     init.write().resume();
-    
+
     processor::set_pid(init.pid()); //inspire：不要直接对全局静态对象更改，使用对应的接口进行更改
     // init.write().pause(); //尝试设为ready
-    PROCESS_MANAGER.call_once(|| ProcessManager::new(init,app_list)); //fixed:add app_list arg
+    PROCESS_MANAGER.call_once(|| ProcessManager::new(init, app_list)); //fixed:add app_list arg
 }
 
 pub fn get_process_manager() -> &'static ProcessManager {
@@ -36,10 +44,11 @@ pub struct ProcessManager {
 }
 
 impl ProcessManager {
-    pub fn app_list(&self) -> boot::AppListRef{
+    pub fn app_list(&self) -> boot::AppListRef {
         self.app_list
     }
-    pub fn new(init: Arc<Process>,app_list: boot::AppListRef) -> Self {  //fixed:add app_list arg
+    pub fn new(init: Arc<Process>, app_list: boot::AppListRef) -> Self {
+        //fixed:add app_list arg
         let mut processes = BTreeMap::new();
         let ready_queue = VecDeque::new();
         let pid = init.pid();
@@ -98,7 +107,7 @@ impl ProcessManager {
         processor::set_pid(n_proc.pid());
         // FIXME: return next process's pid      √
         drop(queue);
-       // print_process_list();
+        // print_process_list();
         return n_proc.pid();
     }
 
@@ -134,11 +143,13 @@ impl ProcessManager {
         // FIXME: handle page fault
         let proc = self.current();
         debug!("err_code: {:#?}", err_code);
-        if !err_code.contains(PageFaultErrorCode::PROTECTION_VIOLATION){
+        if !err_code.contains(PageFaultErrorCode::PROTECTION_VIOLATION) {
             proc.write().handle_page_fault(addr) //交给进程处理，判断是否在栈空间也一并交给它们
-        }
-        else{
-            warn!("This cause by Protection Violation or other reason: {:#x}", addr);
+        } else {
+            warn!(
+                "This cause by Protection Violation or other reason: {:#x}",
+                addr
+            );
             return false;
         }
     }
@@ -187,7 +198,7 @@ impl ProcessManager {
         print!("{}", output);
     }
 
-    pub fn pid_return_code(&self,p_pid: ProcessId) -> Option<isize>{
+    pub fn pid_return_code(&self, p_pid: ProcessId) -> Option<isize> {
         x86_64::instructions::interrupts::without_interrupts(|| {
             self.get_proc(&p_pid).expect("No exist").read().exit_code()
         })
@@ -210,7 +221,10 @@ impl ProcessManager {
         inner.load_elf(elf);
         // FIXME: alloc new stack for process
         // let stack_top = proc.alloc_init_stack();
-        inner.init_stack_frame(VirtAddr::new_truncate(elf.header.pt2.entry_point()), VirtAddr::new_truncate(STACK_INIT_TOP));
+        inner.init_stack_frame(
+            VirtAddr::new_truncate(elf.header.pt2.entry_point()),
+            VirtAddr::new_truncate(STACK_INIT_TOP),
+        );
         // FIXME: mark process as ready
         inner.pause();
         drop(inner);
@@ -224,11 +238,13 @@ impl ProcessManager {
         pid
     }
 
-    pub fn read(&self, fd: u8, buf: &mut [u8]) -> isize { //add read func
+    pub fn read(&self, fd: u8, buf: &mut [u8]) -> isize {
+        //add read func
         self.current().read().read(fd, buf)
     }
 
-    pub fn write(&self, fd: u8, buf: &[u8]) -> isize { //add write func
+    pub fn write(&self, fd: u8, buf: &[u8]) -> isize {
+        //add write func
         self.current().read().write(fd, buf)
     }
 

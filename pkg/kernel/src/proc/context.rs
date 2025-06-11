@@ -1,7 +1,14 @@
-use volatile::{access::ReadOnly, VolatileRef};
-use x86_64::{registers::rflags::RFlags, structures::{gdt::SegmentSelector, idt::InterruptStackFrameValue}, VirtAddr};
+use volatile::{VolatileRef, access::ReadOnly};
+use x86_64::{
+    VirtAddr,
+    registers::rflags::RFlags,
+    structures::{gdt::SegmentSelector, idt::InterruptStackFrameValue},
+};
 
-use crate::{memory::gdt::{self, get_selector}, RegistersValue};
+use crate::{
+    RegistersValue,
+    memory::gdt::{self, get_selector},
+};
 
 #[repr(C)]
 #[derive(Clone, Copy)]

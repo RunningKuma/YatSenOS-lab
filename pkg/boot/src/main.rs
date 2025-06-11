@@ -33,8 +33,8 @@ fn efi_main() -> Status {
     let config = {
         /* FIXME: Load config file as Config */
         let mut file = open_file(CONFIG_PATH);
-        let buf = load_file(&mut file);//following the doc to load file
-        crate::config::Config::parse(buf)//load into the Config struct
+        let buf = load_file(&mut file); //following the doc to load file
+        crate::config::Config::parse(buf) //load into the Config struct
     };
 
     info!("Config: {:#x?}", config);
@@ -43,8 +43,8 @@ fn efi_main() -> Status {
     let elf = {
         /* FIXME: Load kernel elf file */
         let mut file = open_file(config.kernel_path);
-        let buf = load_file(&mut file);//by doc
-        ElfFile::new(buf).unwrap()//load into the ElfFile struct and unwarp
+        let buf = load_file(&mut file); //by doc
+        ElfFile::new(buf).unwrap() //load into the ElfFile struct and unwarp
     };
 
     unsafe {
@@ -66,7 +66,7 @@ fn efi_main() -> Status {
 
     // FIXME: root page table is readonly, disable write protect (Cr0)
     unsafe {
-        Cr0::update(|cr0| cr0.remove(Cr0Flags::WRITE_PROTECT));//disable write protect!
+        Cr0::update(|cr0| cr0.remove(Cr0Flags::WRITE_PROTECT)); //disable write protect!
     }
 
     // FIXME: map physical memory to specific virtual address offset
@@ -74,7 +74,7 @@ fn efi_main() -> Status {
         config.physical_memory_offset,
         max_phys_addr,
         &mut page_table,
-        &mut UEFIFrameAllocator,//can pass as parameter
+        &mut UEFIFrameAllocator, //can pass as parameter
     );
     // FIXME: load and map the kernel elf file
     load_elf(
@@ -82,8 +82,9 @@ fn efi_main() -> Status {
         config.physical_memory_offset,
         &mut page_table,
         &mut UEFIFrameAllocator,
-        false 
-    ).expect("Fail to load and map kernel elf file");
+        false,
+    )
+    .expect("Fail to load and map kernel elf file");
     // FIXME: map kernel stack
     map_range(
         config.kernel_stack_address,
@@ -92,11 +93,12 @@ fn efi_main() -> Status {
             _ => config.kernel_stack_auto_grow / 4096,
         },
         &mut page_table,
-        &mut UEFIFrameAllocator, 
-        false
-    ).unwrap();
+        &mut UEFIFrameAllocator,
+        false,
+    )
+    .unwrap();
 
-    //load apps...is it right to be here?    
+    //load apps...is it right to be here?
     let apps = if config.load_apps {
         info!("Loading apps...");
         Some(load_apps())

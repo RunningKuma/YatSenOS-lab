@@ -69,6 +69,10 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
     // force unlock serial for panic output
     unsafe { SERIAL.get().unwrap().force_unlock() };
 
-    error!("\x1B[31;1mERROR: panic! panic! panic!\x1B[0m\n\n{},at {}", info.message(),info.location().unwrap());
+    error!(
+        "\x1B[31;1mERROR: panic! panic! panic!\x1B[0m\n\n{},at {}",
+        info.message(),
+        info.location().unwrap()
+    );
     loop {}
 }

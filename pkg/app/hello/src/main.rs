@@ -10,7 +10,6 @@ fn main() -> isize {
     // let k = sys_get_pid();
     // println!("My pid is: {}", k);
     sys_exit(233);
-    
 }
 
 entry!(main);

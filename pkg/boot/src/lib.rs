@@ -1,17 +1,17 @@
 #![no_std]
 
+pub use uefi::Status;
 pub use uefi::boot::{MemoryAttribute, MemoryDescriptor, MemoryType};
 pub use uefi::data_types::chars::*;
 pub use uefi::data_types::*;
 pub use uefi::proto::console::gop::{GraphicsOutput, ModeInfo};
-pub use uefi::Status;
 
 use arrayvec::ArrayVec;
-use xmas_elf::ElfFile;
 use core::ptr::NonNull;
+use x86_64::VirtAddr;
 use x86_64::registers::control::Cr3;
 use x86_64::structures::paging::{OffsetPageTable, PageTable};
-use x86_64::VirtAddr;
+use xmas_elf::ElfFile;
 
 pub mod allocator;
 pub mod config;
@@ -104,7 +104,7 @@ use arrayvec::ArrayString;
 
 const APP_NUM_MAX: usize = 16;
 
-pub struct App<'a>{
+pub struct App<'a> {
     pub name: ArrayString<APP_NUM_MAX>,
     pub elf: ElfFile<'a>,
 }

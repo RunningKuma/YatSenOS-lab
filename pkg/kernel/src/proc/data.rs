@@ -1,16 +1,15 @@
 use alloc::{collections::BTreeMap, sync::Arc};
 use spin::RwLock;
 use x86_64::structures::paging::{
-    page::{PageRange, PageRangeInclusive},
     Page,
+    page::{PageRange, PageRangeInclusive},
 };
 
 use crate::proc::sync::SemaphoreSet;
 use super::*;
 use crate::resource::ResourceSet;
 #[derive(Debug, Clone)]
-pub struct 
-ProcessData {
+pub struct ProcessData {
     // shared data
     pub(super) env: Arc<RwLock<BTreeMap<String, String>>>,
     pub(super) resources: Arc<RwLock<ResourceSet>>, //fixed: add resources
@@ -40,13 +39,14 @@ impl ProcessData {
         self.env.write().insert(key.into(), val.into());
     }
 
-    pub fn read(&self, fd: u8, buf: &mut [u8]) -> isize {  //implement read
+    pub fn read(&self, fd: u8, buf: &mut [u8]) -> isize {
+        //implement read
         self.resources.read().read(fd, buf)
     }
 
-    pub fn write(&self, fd: u8, buf: &[u8]) -> isize {  //implement write
+    pub fn write(&self, fd: u8, buf: &[u8]) -> isize {
+        //implement write
         self.resources.read().write(fd, buf)
     }
 
 }
-

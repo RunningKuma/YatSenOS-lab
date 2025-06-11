@@ -1,8 +1,8 @@
 use alloc::format;
 use stack::{STACK_DEF_PAGE, STACK_INIT_BOT};
 use x86_64::{
-    structures::paging::{page::*, *},
     VirtAddr,
+    structures::paging::{page::*, *},
 };
 use xmas_elf::ElfFile;
 
@@ -12,7 +12,7 @@ pub mod stack;
 
 use self::stack::Stack;
 
-use super::{manager::get_process_manager, PageTableContext, ProcessId};
+use super::{PageTableContext, ProcessId, manager::get_process_manager};
 
 type MapperRef<'a> = &'a mut OffsetPageTable<'static>;
 type FrameAllocatorRef<'a> = &'a mut BootInfoFrameAllocator;
@@ -34,11 +34,11 @@ impl ProcessVm {
     }
 
     pub fn init_kernel_vm(mut self) -> Self {
-            // TODO: record kernel code usage
-            
-            self.stack = Stack::kstack();
-            self
-        }
+        // TODO: record kernel code usage
+
+        self.stack = Stack::kstack();
+        self
+    }
 
     // pub fn init_proc_stack(&mut self, pid: ProcessId) -> VirtAddr {
     //     // FIXME: calculate the stack for pid
@@ -47,9 +47,9 @@ impl ProcessVm {
     //     let stack_top = stack::STACK_INIT_TOP - ((pid.0 as u64 - 1)* 0x1_0000_0000);
     //     let stack_bot = stack::STACK_INIT_BOT - ((pid.0 as u64 - 1)* 0x1_0000_0000);
     //     let page_table = &mut self.page_table.mapper();
-        
+
     //     let stack_top_addr = VirtAddr::new(stack_top);
-        
+
     //     let _ = elf::map_range(stack_top, STACK_DEF_PAGE, page_table, frame_allocator,true);
 
     //     self.stack = Stack::new(
@@ -70,14 +70,14 @@ impl ProcessVm {
         self.stack.memory_usage()
     }
 
-    pub fn load_elf(&mut self, elf:&ElfFile){  //fixed: impl load_elf
+    pub fn load_elf(&mut self, elf: &ElfFile) {
+        //fixed: impl load_elf
         let mapper = &mut self.page_table.mapper();
         let alloc = &mut *get_frame_alloc_for_sure();
-        
+
         self.stack.init(mapper, alloc);
 
         _ = elf::load_elf(elf, *PHYSICAL_OFFSET.get().unwrap(), mapper, alloc, true);
-       
     }
     pub fn fork(&self, stack_offset_count: u64) -> Self {
         // clone the page table context (see instructions)

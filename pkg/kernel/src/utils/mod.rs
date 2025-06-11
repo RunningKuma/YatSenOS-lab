@@ -8,10 +8,8 @@ pub use crate::interrupt::clock;
 pub mod func;
 pub mod logger;
 
-
 pub use macros::*;
 pub use regs::*;
-
 
 use crate::proc::*;
 
@@ -32,7 +30,7 @@ __  __      __  _____            ____  _____
 // pub fn new_test_thread(id: &str) -> ProcessId {
 //     let mut proc_data = ProcessData::new();
 //     proc_data.set_env("id", id);
-    
+
 //     spawn_kernel_thread(
 //         func::test,
 //         alloc::format!("#{}_test", id),
@@ -56,7 +54,9 @@ fn wait(pid: ProcessId) {
         // FIXME: try to get the status of the process
         let status = get_return(pid);
         // HINT: it's better to use the exit code
-        if status.is_none()/* FIXME: is the process exited? */ {
+        if status.is_none()
+        /* FIXME: is the process exited? */
+        {
             x86_64::instructions::hlt();
         } else {
             break;

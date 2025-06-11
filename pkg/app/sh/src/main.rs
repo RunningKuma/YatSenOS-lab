@@ -19,19 +19,17 @@ const HELP: &str = r"
 ";
 //make a bash-like shell
 fn main() -> isize {
-    
-
-    loop{
+    loop {
         print!("kuma@ysos [>] ");
         let input = stdin().read_line();
         let cmd = input.split_whitespace().collect::<Vec<&str>>();
         match cmd[0] {
             "help" => {
-                println!("{}",HELP);
-            },
+                println!("{}", HELP);
+            }
             "app" => {
                 sys_list_app();
-            },
+            }
             "ps" => {
                 sys_stat();
             }
@@ -58,14 +56,17 @@ fn main() -> isize {
                 println!("Thank you for using ysos!");
                 break;
             }
-            "\n" | "\r"=> {
+            "\n" | "\r" => {
                 continue;
             }
             _ => {
                 if cmd[0].is_empty() {
                     println!();
                 }
-                println!("You said: {}, Command not found, type 'help' for more info", input);
+                println!(
+                    "You said: {}, Command not found, type 'help' for more info",
+                    input
+                );
             }
         }
     }

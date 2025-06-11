@@ -1,6 +1,6 @@
+use alloc::collections::BTreeMap;
 use alloc::string::String;
 use spin::Mutex;
-use alloc::collections::BTreeMap;
 
 use crate::input::try_pop_key;
 

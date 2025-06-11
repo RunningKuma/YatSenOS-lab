@@ -1,16 +1,16 @@
 mod apic;
-mod consts;
 pub mod clock;
-pub mod serial;
+mod consts;
 pub mod exceptions;
+pub mod serial;
 pub mod syscall;
 
 use lazy_static::lazy_static;
 
+use crate::interrupt::consts::Irq;
+use crate::memory::physical_to_virtual;
 use apic::*;
 use x86_64::structures::idt::InterruptDescriptorTable;
-use crate::memory::physical_to_virtual;
-use crate::interrupt::consts::Irq;
 
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {

@@ -9,9 +9,8 @@ mod sync;
 use alloc::sync::Arc;
 use manager::*;
 use process::*;
-use processor::{get_pid, Processor};
+use processor::{Processor, get_pid};
 use vm::ProcessVm;
-use crate::memory::PAGE_SIZE;
 mod vm;
 use xmas_elf::{ElfFile, program};
 use sync::*;
@@ -19,12 +18,12 @@ use sync::*;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 pub use context::ProcessContext;
-pub use paging::PageTableContext;
 pub use data::ProcessData;
+pub use paging::PageTableContext;
 pub use pid::ProcessId;
 
-use x86_64::structures::idt::PageFaultErrorCode;
 use x86_64::VirtAddr;
+use x86_64::structures::idt::PageFaultErrorCode;
 pub const KERNEL_PID: ProcessId = ProcessId(1);
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -39,20 +38,24 @@ pub enum ProgramStatus {
 pub fn init(boot_info: &'static boot::BootInfo) {
     let proc_vm = ProcessVm::new(PageTableContext::new()).init_kernel_vm();
 
-
     trace!("Init kernel vm: {:#?}", proc_vm);
     //TODO:?should set ProcessData?
     let app_list = boot_info.loaded_apps.as_ref();
-    
+
     // kernel process
-    let kproc = { /* FIXME: create kernel process */
-        Process::new("God".to_string(),None,Some(proc_vm),Some(ProcessData::new()))
-     };
+    let kproc = {
+        /* FIXME: create kernel process */
+        Process::new(
+            "God".to_string(),
+            None,
+            Some(proc_vm),
+            Some(ProcessData::new()),
+        )
+    };
     manager::init(kproc, app_list);
 
     info!("Process Manager Initialized.");
     print_process_list();
-    
 }
 
 pub fn switch(context: &mut ProcessContext) {
@@ -104,10 +107,10 @@ pub fn handle_page_fault(addr: VirtAddr, err_code: PageFaultErrorCode) -> bool {
     })
 }
 
-pub fn get_return(p_pid: ProcessId) -> Option<isize>{
+pub fn get_return(p_pid: ProcessId) -> Option<isize> {
     x86_64::instructions::interrupts::without_interrupts(|| {
-      let manager =  get_process_manager();
-      manager.pid_return_code(p_pid)
+        let manager = get_process_manager();
+        manager.pid_return_code(p_pid)
     })
 }
 
@@ -130,9 +133,7 @@ pub fn list_app() {
 
         // TODO: print more information like size, entry point, etc.
 
-
         println!("[+] App list: {}", apps);
-        
     });
 }
 
@@ -150,7 +151,7 @@ pub fn elf_spawn(name: String, elf: &ElfFile) -> Option<ProcessId> {
         let manager = get_process_manager();
         let process_name = name.to_lowercase();
         let parent = Arc::downgrade(&manager.current());
-        let pid = manager.spawn(elf, name, Some(parent),None);
+        let pid = manager.spawn(elf, name, Some(parent), None);
 
         debug!("Spawned process: {}#{}", process_name, pid);
         pid
@@ -179,13 +180,13 @@ pub fn exit(ret: isize, context: &mut ProcessContext) {
 #[inline]
 pub fn still_alive(pid: ProcessId) -> bool {
     // x86_64::instructions::interrupts::without_interrupts(|| {
-        // check if the process is still alive
-        let manager = get_process_manager();
-        if manager.get_process_status(pid) != ProgramStatus::Dead {
-            true
-        } else {
-            false
-        }
+    // check if the process is still alive
+    let manager = get_process_manager();
+    if manager.get_process_status(pid) != ProgramStatus::Dead {
+        true
+    } else {
+        false
+    }
 }
 
 pub fn get_current_pid() -> ProcessId {

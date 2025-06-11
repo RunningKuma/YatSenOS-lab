@@ -1,7 +1,6 @@
-use crossbeam_queue::ArrayQueue;
 use alloc::string::String;
+use crossbeam_queue::ArrayQueue;
 use lazy_static::lazy_static;
-
 
 type Key = char;
 
@@ -53,7 +52,7 @@ pub fn get_line() -> String {
             }
             _ => {
                 line.push(key);
-                print!("{}",key)
+                print!("{}", key)
             }
         }
     }

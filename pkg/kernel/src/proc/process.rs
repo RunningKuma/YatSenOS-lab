@@ -123,7 +123,6 @@ impl Process {
     //     debug!("init_stack_top: {:#x} ", p);
     //     p
     // }
-
 }
 
 impl ProcessInner {
@@ -174,14 +173,13 @@ impl ProcessInner {
 
     pub fn handle_page_fault(&mut self, addr: VirtAddr) -> bool {
         self.vm_mut().handle_page_fault(addr)
-        
     }
 
     /// Save the process's context
     /// mark the process as ready
     pub(super) fn save(&mut self, context: &ProcessContext) {
         // FIXME: save the process's context
-        self.context.save(context); 
+        self.context.save(context);
         if self.status != ProgramStatus::Dead {
             self.status = ProgramStatus::Ready;
         }
@@ -293,7 +291,6 @@ impl core::ops::DerefMut for ProcessInner {
             .expect("Process data empty. The process may be killed.")
     }
 }
-
 
 impl core::fmt::Debug for Process {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {

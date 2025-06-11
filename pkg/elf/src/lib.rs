@@ -58,12 +58,15 @@ pub fn map_range(
     // default flags for stack
     let flags = {
         if user_acccess {
-            PageTableFlags::PRESENT | PageTableFlags::WRITABLE | PageTableFlags::USER_ACCESSIBLE | PageTableFlags::NO_EXECUTE
+            PageTableFlags::PRESENT
+                | PageTableFlags::WRITABLE
+                | PageTableFlags::USER_ACCESSIBLE
+                | PageTableFlags::NO_EXECUTE
         } else {
             PageTableFlags::PRESENT | PageTableFlags::WRITABLE
         }
     };
-    
+
     for page in Page::range(range_start, range_end) {
         let frame = frame_allocator
             .allocate_frame()
@@ -95,7 +98,7 @@ pub fn load_elf(
     physical_offset: u64,
     page_table: &mut impl Mapper<Size4KiB>,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
-    user_access:bool //fixed: add user_access parameter
+    user_access: bool, //fixed: add user_access parameter
 ) -> Result<(), MapToError<Size4KiB>> {
     let file_buf = elf.input.as_ptr();
 
@@ -128,7 +131,7 @@ fn load_segment(
     segment: &program::ProgramHeader,
     page_table: &mut impl Mapper<Size4KiB>,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
-    user_access:bool, //fixed: add user_access parameter
+    user_access: bool, //fixed: add user_access parameter
 ) -> Result<(), MapToError<Size4KiB>> {
     trace!("Loading & mapping segment: {:#x?}", segment);
 
@@ -143,7 +146,7 @@ fn load_segment(
 
     // unimplemented!("Handle page table flags with segment flags!");
     if segment.flags().is_read() {
-        page_table_flags |= PageTableFlags::USER_ACCESSIBLE;//add flag R
+        page_table_flags |= PageTableFlags::USER_ACCESSIBLE; //add flag R
     }
     if segment.flags().is_write() {
         page_table_flags |= PageTableFlags::WRITABLE; //add flag W
