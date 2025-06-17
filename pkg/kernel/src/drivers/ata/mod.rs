@@ -42,9 +42,18 @@ impl AtaDrive {
         // we only support PATA drives
         if let Ok(AtaDeviceType::Pata(res)) = BUSES[bus as usize].lock().identify_drive(drive) {
             let buf = res.map(u16::to_be_bytes).concat();
-            let serial = { /* FIXME: get the serial from buf */ Box::from("FIXME_SERIAL") };
-            let model = { /* FIXME: get the model from buf */ Box::from("FIXME_MODEL") };
-            let blocks = { /* FIXME: get the block count from buf */ 0 as u32 };
+            let serial = { /* FIXME: get the serial from buf */ 
+                let serial_bytes = &buf[20..40];
+                String::from_utf8_lossy(serial_bytes).trim().into()
+            };
+            let model = { /* FIXME: get the model from buf */ 
+                let model_bytes = &buf[54..94];
+                String::from_utf8_lossy(model_bytes).trim().into()
+            };
+            let blocks = { /* FIXME: get the block count from buf */ 
+                let blocks_bytes = &buf[120..124];
+                u32::from_le_bytes(blocks_bytes.try_into().unwrap())
+            };
             let ata_drive = Self {
                 bus,
                 drive,
@@ -81,7 +90,7 @@ use storage::{Block512, BlockDevice};
 impl BlockDevice<Block512> for AtaDrive {
     fn block_count(&self) -> storage::FsResult<usize> {
         // FIXME: return the block count
-        todo!()
+        return Ok(self.blocks as usize)
     }
 
     fn read_block(&self, offset: usize, block: &mut Block512) -> storage::FsResult {
