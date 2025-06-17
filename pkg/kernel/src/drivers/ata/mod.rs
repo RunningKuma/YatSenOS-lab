@@ -11,6 +11,7 @@ use alloc::{boxed::Box, string::String};
 use bus::AtaBus;
 use consts::AtaDeviceType;
 use spin::Mutex;
+use crate::lazy_static;
 
 lazy_static! {
     pub static ref BUSES: [Mutex<AtaBus>; 2] = {
@@ -41,9 +42,9 @@ impl AtaDrive {
         // we only support PATA drives
         if let Ok(AtaDeviceType::Pata(res)) = BUSES[bus as usize].lock().identify_drive(drive) {
             let buf = res.map(u16::to_be_bytes).concat();
-            let serial = { /* FIXME: get the serial from buf */ };
-            let model = { /* FIXME: get the model from buf */ };
-            let blocks = { /* FIXME: get the block count from buf */ };
+            let serial = { /* FIXME: get the serial from buf */ Box::from("FIXME_SERIAL") };
+            let model = { /* FIXME: get the model from buf */ Box::from("FIXME_MODEL") };
+            let blocks = { /* FIXME: get the block count from buf */ 0 as u32 };
             let ata_drive = Self {
                 bus,
                 drive,

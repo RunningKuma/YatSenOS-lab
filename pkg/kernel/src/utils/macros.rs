@@ -74,5 +74,6 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
         info.message(),
         info.location().unwrap()
     );
+    
     loop {}
 }
