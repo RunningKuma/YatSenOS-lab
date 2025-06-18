@@ -1,9 +1,11 @@
 #![no_std]
 #![no_main]
 
+use storage::{mbr::MbrTable, PartitionTable};
 use ysos::*;
 use ysos_kernel::{self as ysos, proc::spawn};
 use crate::ata::AtaDrive;
+use log::info;
 
 extern crate alloc;
 
@@ -12,7 +14,12 @@ boot::entry_point!(kernel_main);
 pub fn kernel_main(boot_info: &'static boot::BootInfo) -> ! {
     ysos::init(boot_info);
     // ysos::wait(spawn_init());
-    AtaDrive::open(0,0);
+    let drive = AtaDrive::open(0,0).unwrap();
+    let table = MbrTable::parse(drive).unwrap();
+
+    for p in table.partitions().unwrap() {
+        info!("{:?}", p);
+    }
     proc::list_app();
     // proc::spawn("hello").unwrap();
     wait(spawn_init());

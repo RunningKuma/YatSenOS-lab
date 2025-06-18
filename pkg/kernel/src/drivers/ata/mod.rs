@@ -97,13 +97,18 @@ impl BlockDevice<Block512> for AtaDrive {
         // FIXME: read the block
         //      - use `BUSES` and `self` to get bus
         //      - use `read_pio` to get data
-        todo!()
+        BUSES[self.bus as usize]
+            .lock()
+            .read_pio(self.drive, offset as u32, block.as_mut())
+
     }
 
     fn write_block(&self, offset: usize, block: &Block512) -> storage::FsResult {
         // FIXME: write the block
         //      - use `BUSES` and `self` to get bus
         //      - use `write_pio` to write data
-        todo!()
+        BUSES[self.bus as usize]
+            .lock()
+            .write_pio(self.drive, offset as u32, block.as_ref())
     }
 }

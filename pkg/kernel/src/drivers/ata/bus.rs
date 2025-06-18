@@ -221,6 +221,16 @@ impl AtaBus {
         //      - use `buf.chunks_mut(2)`
         //      - use `self.read_data()`
         //      - ! pay attention to data endianness
+        for chunk in buf.chunks_mut(2) {
+            let data = self.read_data();
+            if chunk.len() == 2 {
+                chunk[0] = (data & 0xFF) as u8; // lower byte
+                chunk[1] = (data >> 8) as u8; // higher byte
+            } else if chunk.len() == 1 {
+                // write only the lower byte if the chunk is of size 1
+                chunk[0] = (data & 0xFF) as u8;
+            }
+        }
         
         if self.is_error() {
             debug!("ATA error: data read error");
@@ -242,7 +252,10 @@ impl AtaBus {
         //      - use `buf.chunks(2)`
         //      - use `self.write_data()`
         //      - ! pay attention to data endianness
-
+        for chunk in buf.chunks(2) {
+            let data = u16::from_le_bytes(chunk.try_into().unwrap());
+            self.write_data(data);
+        }
         if self.is_error() {
             debug!("ATA error: data write error");
             self.debug();
