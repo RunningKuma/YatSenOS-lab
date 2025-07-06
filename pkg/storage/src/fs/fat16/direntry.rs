@@ -48,12 +48,70 @@ impl DirEntry {
             String::from("unknown")
         }
     }
+    pub fn is_read_only(&self) -> bool {
+        self.attributes.contains(Attributes::READ_ONLY)
+    }
+
+    pub fn is_hidden(&self) -> bool {   
+        self.attributes.contains(Attributes::HIDDEN)
+    }
+
+    pub fn is_system(&self) -> bool {
+        self.attributes.contains(Attributes::SYSTEM)
+    }
+
+    pub fn is_volume_id(&self) -> bool {
+        self.attributes.contains(Attributes::VOLUME_ID)
+    }
+
+    pub fn is_directory(&self) -> bool {
+        self.attributes.contains(Attributes::DIRECTORY)
+    }
+
+    pub fn is_archive(&self) -> bool {
+        self.attributes.contains(Attributes::ARCHIVE)
+    }
+
+    pub fn is_long_name(&self) -> bool {
+        self.attributes.contains(Attributes::LFN)
+    }
+
+    pub fn is_eod(&self) -> bool {
+        self.filename.is_eod()
+    }
+
+    pub fn is_unused(&self) -> bool {
+        self.filename.is_unused()
+    }
+
+    pub fn is_valid(&self) -> bool {
+        !self.filename.is_eod() && !self.filename.is_unused()
+    }
+    
+    pub fn is_file(&self) -> bool {
+        !self.is_directory()
+    }
 
     /// For Standard 8.3 format
     ///
     /// reference: https://osdev.org/FAT#Standard_8.3_format
     pub fn parse(data: &[u8]) -> FsResult<DirEntry> {
         let filename = ShortFileName::new(&data[..11]);
+
+        let attributes = Attributes::from_bits_truncate(data[0x0B]);
+        let mut time = u32::from_le_bytes(data[0x0E..0x12].try_into().unwrap());
+        let created_time = prase_datetime(time);
+
+        time = u32::from_le_bytes([0, 0, data[18], data[19]]);
+        let accessed_time = prase_datetime(time);
+
+        let cluster = (data[27] as u32) << 8
+            | (data[26] as u32)
+            | (data[21] as u32) << 24
+            | (data[20] as u32) << 16;
+        time = u32::from_le_bytes([data[22], data[23], data[24], data[25]]);
+        let modified_time = prase_datetime(time);
+        let size = u32::from_le_bytes([data[28], data[29], data[30], data[31]]);
 
         // FIXME: parse the rest of the fields
         //      - ensure you can pass the test
@@ -77,7 +135,12 @@ impl DirEntry {
 
 fn prase_datetime(time: u32) -> FsTime {
     // FIXME: parse the year, month, day, hour, min, sec from time
-
+    let year = (((time >> 25) & 0x7F) + 1980) as i32; // 7 bits for year, starting from 1980
+    let month = (time >> 21) & 0x0F; // 4 bits for month
+    let day = (time >> 16) & 0x1F; // 5 bits for day
+    let hour = (time >> 11) & 0x1F; // 5 bits for hour
+    let min = (time >> 5) & 0x3F; // 6 bits for minute
+    let sec = (time & 0x1F) * 2; // 5 bits for seconds, each unit is 2 seconds
     if let Single(time) = Utc.with_ymd_and_hms(year, month, day, hour, min, sec) {
         time
     } else {
@@ -133,8 +196,53 @@ impl ShortFileName {
         //      - check if the filename contains invalid characters:
         //        [0x00..=0x1F, 0x20, 0x22, 0x2A, 0x2B, 0x2C, 0x2F, 0x3A,
         //        0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x5B, 0x5C, 0x5D, 0x7C]
+        let mut short_name = ShortFileName{
+            name: [0x20; 8],
+            ext: [0x20; 3],
+        };
+        let mut i = 0;
+        let mut seen_dot = false;
+        for ch in name.bytes() {
+            match ch {
+                0x00..=0x1F | 0x20 | 0x22 | 0x2A | 0x2B | 0x2C | 0x2F |
+                0x3A | 0x3B | 0x3C | 0x3D | 0x3E | 0x3F | 0x5B | 0x5C |
+                0x5D | 0x7C => {
+                    return Err(FilenameError::InvalidCharacter.into());
+                }
+                b'.' => { 
+                    if seen_dot || i >= 8 {
+                        return Err(FilenameError::MisplacedPeriod.into());
+                    }
+                    seen_dot = true;
+                    continue;
+                }
+                _ => {
+                    let buf = ch.to_ascii_uppercase();
+                    if seen_dot {
+                        if i - 8 < 3 {
+                            short_name.ext[i - 8] = buf;
+                        } else {
+                            return Err(FilenameError::NameTooLong.into());
+                        }
+                    }
+                    else if i < 8 {
+                        short_name.name[i] = buf;
+                    } else {
+                        return Err(FilenameError::NameTooLong.into());
+                    }
+                    i += 1;
+                }
+            }
+        }
+        if i == 0 {
+        return Err(FilenameError::FilenameEmpty.into());
+        } else {
+            Ok(short_name)
+        }
     }
+    
 }
+
 
 impl Debug for ShortFileName {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {

@@ -4,7 +4,7 @@ use core::ops::{Deref, DerefMut};
 
 pub struct FileHandle {
     pub meta: Metadata,
-    file: Box<dyn FileIO + Send>,
+    pub(crate) file: Box<dyn FileIO + Send>,
 }
 
 impl FileHandle {
