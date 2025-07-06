@@ -1,11 +1,9 @@
 use super::*;
 use crate::{
     memory::{
-        self, PAGE_SIZE,
-        allocator::{ALLOCATOR, HEAP_SIZE},
-        get_frame_alloc_for_sure,
+        self, allocator::{ALLOCATOR, HEAP_SIZE}, get_frame_alloc_for_sure, PAGE_SIZE
     },
-    proc::vm::stack::STACK_INIT_TOP,
+    proc::vm::stack::STACK_INIT_TOP, resource::Resource,
 };
 use alloc::{
     collections::*,
@@ -16,6 +14,7 @@ use spin::{Mutex, RwLock};
 
 use boot::*;
 use elf::map_range;
+use storage::FileSystem;
 
 pub static PROCESS_MANAGER: spin::Once<ProcessManager> = spin::Once::new();
 
@@ -299,5 +298,22 @@ pub fn block(&self, pid: ProcessId) {
             inner.pause();
             self.push_ready(pid);
         }
+    }
+
+    pub fn open(&self, path: &str, _mode: u8) -> Option<u8> {
+        let res = match crate::filesystem::get_rootfs().open_file(path) {
+            Ok(file) => Resource::File(file),
+            Err(_) => return None,
+        };
+
+        trace!("Opening {}...\n{:#?}", path, &res);
+
+        let fd = self.current().write().open(res);
+
+        Some(fd)
+    }
+
+    pub fn close(&self, fd: u8) -> bool {
+        self.current().write().close(fd)
     }
 }

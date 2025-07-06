@@ -256,3 +256,12 @@ pub fn sem_wait(key: u32, context: &mut ProcessContext) {
         }
     })
 }
+pub fn open(path: &str, mode: u8) -> Option<u8> {
+    x86_64::instructions::interrupts::without_interrupts(|| {
+        get_process_manager().open(path,mode)
+    })
+}
+
+pub fn close(fd: u8) -> bool {
+    x86_64::instructions::interrupts::without_interrupts(|| get_process_manager().close(fd))
+}

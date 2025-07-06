@@ -32,6 +32,7 @@ pub trait Read {
             }
         }
     }
+}
 
 /// The `Write` trait allows for writing bytes to a source.
 ///

@@ -99,6 +99,11 @@ pub fn dispatcher(context: &mut ProcessContext) {
         // op: u8, key: u32, val: usize -> ret: any
         Syscall::Sem => sys_sem(&args, context),
         
+        Syscall::ListDir => list_dir(&args),
+
+        Syscall::Open => context.set_rax(sys_open(&args)),
+
+        Syscall::Close => context.set_rax(sys_close(&args)),
         // ----------------------------------------------------
         // NOTE: following syscall examples are implemented
         // ----------------------------------------------------
@@ -109,6 +114,8 @@ pub fn dispatcher(context: &mut ProcessContext) {
         Syscall::Deallocate => sys_deallocate(&args),
         // Unknown
         Syscall::Unknown => warn!("Unhandled syscall: {:x?}", context.regs.rax),
+
+
     }
 }
 

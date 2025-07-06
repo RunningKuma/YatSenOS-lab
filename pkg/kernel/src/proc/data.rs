@@ -5,7 +5,7 @@ use x86_64::structures::paging::{
     page::{PageRange, PageRangeInclusive},
 };
 
-use crate::proc::sync::SemaphoreSet;
+use crate::{proc::sync::SemaphoreSet, resource::Resource};
 use super::*;
 use crate::resource::ResourceSet;
 #[derive(Debug, Clone)]
@@ -47,6 +47,16 @@ impl ProcessData {
     pub fn write(&self, fd: u8, buf: &[u8]) -> isize {
         //implement write
         self.resources.read().write(fd, buf)
+    }
+
+    pub fn open(&mut self, res: Resource) -> u8 {
+        //implement open
+        self.resources.write().open(res)
+    }
+
+    pub fn close(&mut self, fd: u8) -> bool {
+        //implement close
+        self.resources.write().close(fd)
     }
 
 }

@@ -1,6 +1,7 @@
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use spin::Mutex;
+use storage::FileHandle;
 
 use crate::input::try_pop_key;
 
@@ -62,6 +63,7 @@ impl ResourceSet {
 pub enum Resource {
     Console(StdIO),
     Null,
+    File(FileHandle)
 }
 
 impl Resource {
@@ -81,6 +83,14 @@ impl Resource {
                 _ => None,
             },
             Resource::Null => Some(0),
+            Resource::File(file) => {
+                let buf = file.read(buf);
+                if buf.is_err() {
+                    None
+                } else {
+                    Some(buf.unwrap())
+                }
+            }
         }
     }
 
@@ -98,6 +108,7 @@ impl Resource {
                 }
             },
             Resource::Null => Some(buf.len()),
+            _ => unimplemented!("Write not implemented for this resource"),
         }
     }
 }

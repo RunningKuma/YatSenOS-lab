@@ -132,5 +132,33 @@ pub fn sys_sem(args: &SyscallArgs, context: &mut ProcessContext) {
     }
 }
 
+pub fn list_dir(args: &SyscallArgs) {
+    let path = unsafe {
+        core::str::from_utf8_unchecked(core::slice::from_raw_parts(
+            args.arg0 as *const u8,
+            args.arg1 as usize,
+        ))
+    };
+    crate::drivers::filesystem::ls(path);
+}
 
+pub fn sys_open(args: &SyscallArgs) -> usize {
+    let path = unsafe {
+        core::str::from_utf8_unchecked(core::slice::from_raw_parts(
+            args.arg0 as *const u8,
+            args.arg1,
+        ))
+    };
 
+    match open(path, args.arg2 as u8) {
+        Some(fd) => fd as usize,
+        None => {
+            warn!("sys_open: failed to open: {}", path);
+            0
+        }
+    }
+}
+
+pub fn sys_close(args: &SyscallArgs) -> usize {
+    close(args.arg0 as u8) as usize
+}
