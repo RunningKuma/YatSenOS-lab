@@ -88,7 +88,6 @@ pub fn sys_new_sem(key: u32, value: usize) -> bool {
     syscall!(Syscall::Sem, 0, key as usize, value) == 0
 }
 
-
 #[inline(always)]
 pub fn sys_remove_sem(key: u32) -> bool {
     syscall!(Syscall::Sem, 1, key as usize) == 0
@@ -102,4 +101,24 @@ pub fn sys_sem_signal(key: u32) -> isize {
 #[inline(always)]
 pub fn sys_sem_wait(key: u32) -> isize {
     syscall!(Syscall::Sem, 3, key as usize) as isize
+}
+
+#[inline(always)]
+pub fn sys_list_dir(path: &str) {
+    syscall!(Syscall::ListDir, path.as_ptr() as u64, path.len() as u64);
+}
+
+#[inline(always)]
+pub fn sys_open(path: &str, flags: u8) -> u8 {
+    syscall!(
+        Syscall::Open,
+        path.as_ptr() as u64,
+        path.len() as u64,
+        flags as u64
+    ) as u8
+}
+
+#[inline(always)]
+pub fn sys_close(fd: u8) -> bool {
+    syscall!(Syscall::Close, fd as u64) == 0
 }

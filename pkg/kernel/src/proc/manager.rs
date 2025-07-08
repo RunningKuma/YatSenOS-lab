@@ -1,9 +1,12 @@
 use super::*;
 use crate::{
     memory::{
-        self, allocator::{ALLOCATOR, HEAP_SIZE}, get_frame_alloc_for_sure, PAGE_SIZE
+        self, PAGE_SIZE,
+        allocator::{ALLOCATOR, HEAP_SIZE},
+        get_frame_alloc_for_sure,
     },
-    proc::vm::stack::STACK_INIT_TOP, resource::Resource,
+    proc::vm::stack::STACK_INIT_TOP,
+    resource::Resource,
 };
 use alloc::{
     collections::*,
@@ -39,7 +42,7 @@ pub struct ProcessManager {
     processes: RwLock<BTreeMap<ProcessId, Arc<Process>>>,
     ready_queue: Mutex<VecDeque<ProcessId>>,
     app_list: boot::AppListRef, //fixed: add app list
-    wait_queue: Mutex<BTreeMap<ProcessId, BTreeSet<ProcessId>>>,// fixed: add wait_queue
+    wait_queue: Mutex<BTreeMap<ProcessId, BTreeSet<ProcessId>>>, // fixed: add wait_queue
 }
 
 impl ProcessManager {
@@ -58,7 +61,7 @@ impl ProcessManager {
         Self {
             processes: RwLock::new(processes),
             ready_queue: Mutex::new(ready_queue),
-            app_list: app_list, //fixed
+            app_list: app_list,                      //fixed
             wait_queue: Mutex::new(BTreeMap::new()), //fixed
         }
     }
@@ -264,19 +267,18 @@ impl ProcessManager {
         debug!("Process ready queue: {:?}", self.ready_queue.lock());
     }
 
-
     /// Block the process with the given pid, lab0x06
-pub fn block(&self, pid: ProcessId) {
-    if let Some(proc) = self.get_proc(&pid) {
-        // FIXME: set the process as blocked
-        proc.write().block();
+    pub fn block(&self, pid: ProcessId) {
+        if let Some(proc) = self.get_proc(&pid) {
+            // FIXME: set the process as blocked
+            proc.write().block();
+        }
     }
-}
     pub fn wait_pid(&self, pid: ProcessId) {
         let mut wait_queue = self.wait_queue.lock();
         // FIXME: push the current process to the wait queue
         //        `processor::get_pid()` is waiting for `pid`
-        
+
         wait_queue.insert(pid, BTreeSet::new());
         let entry = wait_queue.entry(pid).or_default();
         entry.insert(processor::get_pid());

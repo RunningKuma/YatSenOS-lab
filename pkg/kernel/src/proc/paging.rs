@@ -54,7 +54,6 @@ impl PageTableContext {
         Self {
             reg: Arc::new(Cr3RegValue::new(page_table_addr, Cr3Flags::empty())),
         }
-
     }
 
     /// Load the page table to Cr3 register.

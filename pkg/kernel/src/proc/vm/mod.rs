@@ -91,7 +91,6 @@ impl ProcessVm {
             stack: self.stack.fork(mapper, alloc, stack_offset_count),
         }
     }
-
 }
 
 impl core::fmt::Debug for ProcessVm {

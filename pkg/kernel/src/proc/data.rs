@@ -5,9 +5,9 @@ use x86_64::structures::paging::{
     page::{PageRange, PageRangeInclusive},
 };
 
-use crate::{proc::sync::SemaphoreSet, resource::Resource};
 use super::*;
 use crate::resource::ResourceSet;
+use crate::{proc::sync::SemaphoreSet, resource::Resource};
 #[derive(Debug, Clone)]
 pub struct ProcessData {
     // shared data
@@ -20,7 +20,7 @@ impl Default for ProcessData {
     fn default() -> Self {
         Self {
             env: Arc::new(RwLock::new(BTreeMap::new())),
-            resources: Arc::new(RwLock::new(ResourceSet::default())),  //fixed: init
+            resources: Arc::new(RwLock::new(ResourceSet::default())), //fixed: init
             semaphores: Arc::new(RwLock::new(SemaphoreSet::default())), //fixed: init
         }
     }
@@ -58,5 +58,4 @@ impl ProcessData {
         //implement close
         self.resources.write().close(fd)
     }
-
 }

@@ -94,7 +94,8 @@ pub fn sys_getpid() -> u16 {
     get_current_pid().0
 }
 
-pub fn sys_waitpid(args: &SyscallArgs, context:& mut ProcessContext) {//-> isize 
+pub fn sys_waitpid(args: &SyscallArgs, context: &mut ProcessContext) {
+    //-> isize
     let pid = ProcessId(args.arg0 as u16);
     wait_pid(pid, context);
 }
@@ -107,7 +108,7 @@ pub fn sys_list_proc() {
     list_process();
 }
 
-pub fn fork(context:& mut ProcessContext) {
+pub fn fork(context: &mut ProcessContext) {
     x86_64::instructions::interrupts::without_interrupts(|| {
         let manager = crate::proc::manager::get_process_manager();
         // FIXME: save_current as parent

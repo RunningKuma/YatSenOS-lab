@@ -18,7 +18,7 @@ fn main() {
     } else {
         sys_wait_pid(pid);
         test_spin();
-    }        
+    }
     sys_exit(0);
 }
 

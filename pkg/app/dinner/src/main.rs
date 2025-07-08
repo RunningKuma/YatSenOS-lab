@@ -1,9 +1,8 @@
 #![no_std]
 #![no_main]
 
-
 use lib::*;
-use rand_chacha::{rand_core::SeedableRng, ChaCha20Rng};
+use rand_chacha::{ChaCha20Rng, rand_core::SeedableRng};
 
 extern crate lib;
 
@@ -12,24 +11,23 @@ const EATING_CYCLES: usize = 3;
 static mut EATEN: [u32; 5] = [0; 5];
 
 // 5个筷子，每个筷子用信号量表示（初始值为1，表示可用）
-static CHOPSTICKS: [Semaphore; 5] = semaphore_array![0,1,2,3,4];
+static CHOPSTICKS: [Semaphore; 5] = semaphore_array![0, 1, 2, 3, 4];
 
 fn main() -> isize {
-    
     // 初始化所有筷子
     for i in 0..5 {
         CHOPSTICKS[i].init(1);
     }
-    
+
     let mut pids = [0u16; PHILOSOPHER_EATEN];
-    println!("Enter the number for different cases:\n
+    println!(
+        "Enter the number for different cases:\n
     1. Normal case (May cause deadlock)\n
     2. Starvation case\n
-    3. Deadlock prevention case\n");
+    3. Deadlock prevention case\n"
+    );
 
-    let input = stdin().read_line()
-        .trim()
-        .parse::<u32>();
+    let input = stdin().read_line().trim().parse::<u32>();
 
     let rng = ChaCha20Rng::seed_from_u64(sys_get_pid() as u64);
     for i in 0..PHILOSOPHER_EATEN {
@@ -50,54 +48,92 @@ fn main() -> isize {
             pids[i] = pid;
         }
     }
-    
+
     sys_stat();
 
     for i in 0..PHILOSOPHER_EATEN {
-        println!("Waiting for philosopher {} (PID: {}) to finish...", i, pids[i]);
+        println!(
+            "Waiting for philosopher {} (PID: {}) to finish...",
+            i, pids[i]
+        );
         sys_wait_pid(pids[i]);
     }
-    
+
     for i in 0..5 {
         CHOPSTICKS[i].free();
     }
-    
+
     sys_exit(0)
 }
 
 fn normal_case(id: usize) {
-    println!("Philosopher {} (PID: {}) started thinking...", id, sys_get_pid());
-    
+    println!(
+        "Philosopher {} (PID: {}) started thinking...",
+        id,
+        sys_get_pid()
+    );
+
     for cycle in 0..EATING_CYCLES {
-        println!("Philosopher {} (PID: {}) - Cycle {}/{}", id, sys_get_pid(), cycle + 1, EATING_CYCLES);
+        println!(
+            "Philosopher {} (PID: {}) - Cycle {}/{}",
+            id,
+            sys_get_pid(),
+            cycle + 1,
+            EATING_CYCLES
+        );
         CHOPSTICKS[id].wait();
         CHOPSTICKS[(id + 1) % PHILOSOPHER_EATEN].wait();
-        println!("Philosopher {} (PID: {}) is EATING (Cycle {})", id, sys_get_pid(), cycle + 1);
+        println!(
+            "Philosopher {} (PID: {}) is EATING (Cycle {})",
+            id,
+            sys_get_pid(),
+            cycle + 1
+        );
 
         eat(id);
 
         CHOPSTICKS[(id + 1) % PHILOSOPHER_EATEN].signal();
         CHOPSTICKS[id].signal();
-        
     }
-    
-    println!("Philosopher {} (PID: {}) finished all {} cycles and is leaving", id, sys_get_pid(), EATING_CYCLES);
+
+    println!(
+        "Philosopher {} (PID: {}) finished all {} cycles and is leaving",
+        id,
+        sys_get_pid(),
+        EATING_CYCLES
+    );
     sys_exit(0);
 }
 
-fn starvation_case(id: usize){
-        for cycle in 0..EATING_CYCLES {
-        think(id*100 + cycle);
-        println!("Philosopher {} (PID: {}) - Cycle {}/{}", id, sys_get_pid(), cycle + 1, EATING_CYCLES);
+fn starvation_case(id: usize) {
+    for cycle in 0..EATING_CYCLES {
+        think(id * 100 + cycle);
+        println!(
+            "Philosopher {} (PID: {}) - Cycle {}/{}",
+            id,
+            sys_get_pid(),
+            cycle + 1,
+            EATING_CYCLES
+        );
 
         if id != 4 {
             CHOPSTICKS[id].wait();
-            println!("Philosopher {} (PID: {}) picked up left chopstick {}", id, sys_get_pid(), id);
+            println!(
+                "Philosopher {} (PID: {}) picked up left chopstick {}",
+                id,
+                sys_get_pid(),
+                id
+            );
             CHOPSTICKS[(id + 1) % PHILOSOPHER_EATEN].wait();
         } else {
             sleep(1000);
             CHOPSTICKS[(id + 1) % PHILOSOPHER_EATEN].wait();
-            println!("Philosopher {} (PID: {}) should picked up right chopstick {}", id, sys_get_pid(), (id + 1) % PHILOSOPHER_EATEN);
+            println!(
+                "Philosopher {} (PID: {}) should picked up right chopstick {}",
+                id,
+                sys_get_pid(),
+                (id + 1) % PHILOSOPHER_EATEN
+            );
             CHOPSTICKS[id].wait();
         }
 
@@ -105,21 +141,25 @@ fn starvation_case(id: usize){
 
         CHOPSTICKS[(id + 1) % PHILOSOPHER_EATEN].signal();
         CHOPSTICKS[id].signal();
-        
     }
 }
-
 
 fn deadlock_prevention_case(id: usize, rand: ChaCha20Rng) {
     let pid = sys_get_pid();
     println!("Philosopher {} (PID: {}) started thinking...", id, pid);
-    
-    for cycle in 0..EATING_CYCLES {
-        println!("Philosopher {} (PID: {}) - Cycle {}/{}", id, pid, cycle + 1, EATING_CYCLES);
-        let think_time = 500;
-        sleep(think_time);       // 思考阶段
 
-        if id % 2 == 0{
+    for cycle in 0..EATING_CYCLES {
+        println!(
+            "Philosopher {} (PID: {}) - Cycle {}/{}",
+            id,
+            pid,
+            cycle + 1,
+            EATING_CYCLES
+        );
+        let think_time = 500;
+        sleep(think_time); // 思考阶段
+
+        if id % 2 == 0 {
             CHOPSTICKS[id].wait();
             CHOPSTICKS[(id + 1) % 5].wait();
         } else {
@@ -127,20 +167,23 @@ fn deadlock_prevention_case(id: usize, rand: ChaCha20Rng) {
             CHOPSTICKS[id].wait();
         }
 
-        unsafe{ eat(id) }
+        unsafe { eat(id) }
 
         CHOPSTICKS[(id + 1) % 5].signal();
         CHOPSTICKS[id].signal();
     }
-    
-    println!("Philosopher {} (PID: {}) finished all {} cycles and is leaving", id, pid, EATING_CYCLES);
+
+    println!(
+        "Philosopher {} (PID: {}) finished all {} cycles and is leaving",
+        id, pid, EATING_CYCLES
+    );
     sys_exit(0);
 }
 
 fn think(id: usize) {
     let pid = sys_get_pid();
     println!("Philosopher {} (PID: {}) is thinking...", id, pid);
-    
+
     // 思考时间（使用延迟模拟）
     for _ in 0..(id + 1) {
         delay();
@@ -151,11 +194,13 @@ fn eat(id: usize) {
     let left_chopstick = id;
     let right_chopstick = (id + 1) % 5;
     let pid = sys_get_pid();
-    
-    println!("Philosopher {} (PID: {}) is EATING with chopsticks {} and {}", 
-             id, pid, left_chopstick, right_chopstick);
-    
-        delay();
+
+    println!(
+        "Philosopher {} (PID: {}) is EATING with chopsticks {} and {}",
+        id, pid, left_chopstick, right_chopstick
+    );
+
+    delay();
 }
 
 fn sleep(id: u64) {

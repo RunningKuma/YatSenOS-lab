@@ -1,6 +1,6 @@
 use super::ata::*;
 use alloc::boxed::Box;
-// use chrono::DateTime;
+use chrono::DateTime;
 use storage::fat16::Fat16;
 use storage::mbr::*;
 use storage::*;
@@ -47,21 +47,18 @@ pub fn ls(root_path: &str) {
     //      - add '/' to the end of directory names
     //      - format the date as you like
     //      - do not forget to print the table header
-        println!(
-        "{:>5} | {:>20} | {:>20} ",
-        "Size", "Modified", "Name",
-    );
-   for meta in iter { 
+    println!("{:>5}  | {:>15}     | {} ", "Size", "Modified time", "Name",);
+    for meta in iter {
         let (size, unit) = crate::humanized_size_short(meta.len as u64);
-        let time = meta.modified.map(|t| t.format("%Y/%m/%d %H:%M:%S")).unwrap_or(
-                    DateTime::from_timestamp_millis(0)
-                        .unwrap()
-                        .format("%Y/%m/%d %H:%M:%S")
-                );
-        print!(
-            "{:>5.*}{} | {} | {}",1,size,unit,
-            meta.name,time
-        );
+        let time = meta
+            .modified
+            .map(|t| t.format("%Y/%m/%d %H:%M:%S"))
+            .unwrap_or(
+                DateTime::from_timestamp_millis(0)
+                    .unwrap()
+                    .format("%Y/%m/%d %H:%M:%S"),
+            );
+        print!("{:>5.*}{} | {:>15} | {}", 1, size, unit, time, meta.name);
         if meta.is_dir() {
             println!("/");
         } else {

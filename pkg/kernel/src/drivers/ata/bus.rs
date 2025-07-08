@@ -144,7 +144,8 @@ impl AtaBus {
             self.lba_low.write(bytes[0]);
             self.lba_mid.write(bytes[1]);
             self.lba_high.write(bytes[2]);
-            self.drive.write((0xE0 | (drive << 4) | (bytes[3] & 0x0F)) as u8);  
+            self.drive
+                .write((0xE0 | (drive << 4) | (bytes[3] & 0x0F)) as u8);
 
             // FIXME: write the command register (cmd as u8)
             self.command.write(cmd as u8);
@@ -184,16 +185,15 @@ impl AtaBus {
         let result = self.write_command(drive, 0, AtaCommand::IdentifyDevice);
         if result.is_err() {
             if self.status().is_empty() {
-            return FsResult::Ok(AtaDeviceType::None)
+                return FsResult::Ok(AtaDeviceType::None);
+            } else {
+                return FsResult::Err(storage::DeviceError::Unknown.into());
+            }
         }
-        else{
-            return FsResult::Err(storage::DeviceError::Unknown.into());
-        }
-        }
-        
+
         // FIXME: poll for the status to be not BUSY
         self.poll(AtaStatus::BUSY, false);
-        
+
         Ok(match (self.cylinder_low(), self.cylinder_high()) {
             // we only support PATA drives
             (0x00, 0x00) => AtaDeviceType::Pata(Box::new([0u16; 256].map(|_| self.read_data()))),
@@ -209,12 +209,7 @@ impl AtaBus {
     ///
     /// reference: https://wiki.osdev.org/ATA_PIO_Mode#28_bit_PIO
     /// reference: https://wiki.osdev.org/IDE#Read.2FWrite_From_ATA_Drive
-    pub(super) fn read_pio(
-        &mut self,
-        drive: u8,
-        block: u32,
-        buf: &mut [u8],
-    ) -> storage::FsResult {
+    pub(super) fn read_pio(&mut self, drive: u8, block: u32, buf: &mut [u8]) -> storage::FsResult {
         self.write_command(drive, block, AtaCommand::ReadPio)?;
 
         // FIXME: read the data from the data port into the buffer
@@ -231,7 +226,7 @@ impl AtaBus {
                 chunk[0] = (data & 0xFF) as u8;
             }
         }
-        
+
         if self.is_error() {
             debug!("ATA error: data read error");
             self.debug();

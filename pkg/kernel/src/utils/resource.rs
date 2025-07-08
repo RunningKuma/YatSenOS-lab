@@ -63,7 +63,7 @@ impl ResourceSet {
 pub enum Resource {
     Console(StdIO),
     Null,
-    File(FileHandle)
+    File(FileHandle),
 }
 
 impl Resource {

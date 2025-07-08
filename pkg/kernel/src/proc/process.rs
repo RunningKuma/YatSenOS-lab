@@ -5,11 +5,11 @@ use alloc::sync::{Arc, Weak};
 use alloc::vec::Vec;
 use elf::load_elf;
 use spin::*;
+use sync::*;
 use uefi::proto::debug;
 use x86_64::structures::paging::mapper::MapToError;
 use x86_64::structures::paging::page::PageRange;
 use x86_64::structures::paging::*;
-use sync::*;
 
 #[derive(Clone)]
 pub struct Process {
@@ -90,30 +90,31 @@ impl Process {
 
         inner.kill(ret);
     }
-    
+
     pub fn fork(self: &Arc<Self>) -> Arc<Self> {
-            // FIXME: lock inner as write
+        // FIXME: lock inner as write
         let mut inner = self.write();
-            // FIXME: inner fork with parent weak ref
+        // FIXME: inner fork with parent weak ref
         let child_inner = inner.fork(Arc::downgrade(self)); //具体实现委托给inner，获取Weak引用避免循环
-            // FOR DBG: maybe print the child process info
-            //          e.g. parent, name, pid, etc.
-        debug!("Forking process {}#{} to {} \n ",
+        // FOR DBG: maybe print the child process info
+        //          e.g. parent, name, pid, etc.
+        debug!(
+            "Forking process {}#{} to {} \n ",
             inner.name(),
             self.pid,
             child_inner.name
         );
-            // FIXME: make the arc of child
+        // FIXME: make the arc of child
         let child = Arc::new(Process {
             pid: ProcessId::new(),
-            inner: Arc::new(RwLock::new(child_inner))
+            inner: Arc::new(RwLock::new(child_inner)),
         });
-         //DEBUG
-            // FIXME: add child to current process's children list
+        //DEBUG
+        // FIXME: add child to current process's children list
         inner.children.push(child.clone());
-            // FIXME: set fork ret value for parent with `context.set_rax`
+        // FIXME: set fork ret value for parent with `context.set_rax`
         inner.context.set_rax(child.pid.0 as usize); //在这里设置父进程的返回值
-            // FIXME: mark the child as ready & return it
+        // FIXME: mark the child as ready & return it
         child.write().status = ProgramStatus::Ready;
         child
     }
@@ -147,7 +148,7 @@ impl ProcessInner {
     }
 
     pub fn block(&mut self) {
-    self.status = ProgramStatus::Blocked;
+        self.status = ProgramStatus::Blocked;
     }
 
     pub fn exit_code(&self) -> Option<isize> {
@@ -223,28 +224,28 @@ impl ProcessInner {
         let offset = child_proc_vm.stack.count_stack_offset(&self.vm().stack);
         let mut child_context = self.context.clone();
         // FIXME: update `rsp` in interrupt stack frame
-        child_context.set_rsp(offset); 
+        child_context.set_rsp(offset);
         // FIXME: set the return value 0 for child with `context.set_rax`
         child_context.set_rax(0);
         // FIXME: clone the process data struct
         let child_proc_data = self.proc_data.clone();
         // FIXME: construct the child process inner
-        Self { 
-            name: self.name.clone(), 
-            parent: Some(parent), 
-            children: Vec::new(), 
-            ticks_passed: 0, 
-            status: ProgramStatus::Ready, 
-            context: child_context, 
-            exit_code: None, 
-            proc_data: child_proc_data, 
-            proc_vm: Some(child_proc_vm), 
+        Self {
+            name: self.name.clone(),
+            parent: Some(parent),
+            children: Vec::new(),
+            ticks_passed: 0,
+            status: ProgramStatus::Ready,
+            context: child_context,
+            exit_code: None,
+            proc_data: child_proc_data,
+            proc_vm: Some(child_proc_vm),
         }
         // NOTE: return inner because there's no pid record in inner
     }
-    pub fn set_exit_code(&mut self, ret: isize){
+    pub fn set_exit_code(&mut self, ret: isize) {
         self.context.set_rax(ret as usize);
-    } 
+    }
 
     //semaphores as follows:
     pub fn new_sem(&mut self, key: u32, value: usize) -> bool {
@@ -255,15 +256,13 @@ impl ProcessInner {
         self.semaphores.write().remove(key)
     }
 
-    pub fn sem_wait(&mut self, key: u32, pid: ProcessId) -> SemaphoreResult{
+    pub fn sem_wait(&mut self, key: u32, pid: ProcessId) -> SemaphoreResult {
         self.semaphores.read().wait(key, pid)
     }
 
     pub fn sem_signal(&mut self, key: u32) -> SemaphoreResult {
         self.semaphores.write().signal(key)
     }
-
-
 }
 
 impl core::ops::Deref for Process {

@@ -72,8 +72,6 @@ impl ProcessContext {
 
         trace!("Init stack frame: {:#?}", &self.stack_frame);
     }
-
-
 }
 
 impl Default for ProcessContextValue {

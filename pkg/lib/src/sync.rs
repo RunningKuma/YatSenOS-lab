@@ -69,7 +69,6 @@ impl Semaphore {
     pub fn free(&self) -> bool {
         sys_remove_sem(self.key)
     }
-
 }
 
 unsafe impl Sync for Semaphore {}
@@ -80,4 +79,3 @@ macro_rules! semaphore_array {
         [ $($crate::Semaphore::new($x),)* ]
     }
 }
-

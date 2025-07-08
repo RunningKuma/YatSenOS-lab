@@ -52,7 +52,7 @@ impl DirEntry {
         self.attributes.contains(Attributes::READ_ONLY)
     }
 
-    pub fn is_hidden(&self) -> bool {   
+    pub fn is_hidden(&self) -> bool {
         self.attributes.contains(Attributes::HIDDEN)
     }
 
@@ -87,7 +87,7 @@ impl DirEntry {
     pub fn is_valid(&self) -> bool {
         !self.filename.is_eod() && !self.filename.is_unused()
     }
-    
+
     pub fn is_file(&self) -> bool {
         !self.is_directory()
     }
@@ -196,53 +196,67 @@ impl ShortFileName {
         //      - check if the filename contains invalid characters:
         //        [0x00..=0x1F, 0x20, 0x22, 0x2A, 0x2B, 0x2C, 0x2F, 0x3A,
         //        0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x5B, 0x5C, 0x5D, 0x7C]
-        let mut short_name = ShortFileName{
+        let mut sfn = ShortFileName {
             name: [0x20; 8],
             ext: [0x20; 3],
         };
-        let mut i = 0;
+        let mut idx = 0;
         let mut seen_dot = false;
         for ch in name.bytes() {
             match ch {
-                0x00..=0x1F | 0x20 | 0x22 | 0x2A | 0x2B | 0x2C | 0x2F |
-                0x3A | 0x3B | 0x3C | 0x3D | 0x3E | 0x3F | 0x5B | 0x5C |
-                0x5D | 0x7C => {
+                // Microsoft say these are the invalid characters
+                0x00..=0x1F
+                | 0x20
+                | 0x22
+                | 0x2A
+                | 0x2B
+                | 0x2C
+                | 0x2F
+                | 0x3A
+                | 0x3B
+                | 0x3C
+                | 0x3D
+                | 0x3E
+                | 0x3F
+                | 0x5B
+                | 0x5C
+                | 0x5D
+                | 0x7C => {
                     return Err(FilenameError::InvalidCharacter.into());
                 }
-                b'.' => { 
-                    if seen_dot || i >= 8 {
+                // Denotes the start of the file extension
+                b'.' => {
+                    if (1..=8).contains(&idx) {
+                        seen_dot = true;
+                        idx = 8;
+                    } else {
                         return Err(FilenameError::MisplacedPeriod.into());
                     }
-                    seen_dot = true;
-                    continue;
                 }
                 _ => {
-                    let buf = ch.to_ascii_uppercase();
+                    let ch = ch.to_ascii_uppercase();
+                    // trace!("Char: '{}', at: {}", ch as char, idx);
                     if seen_dot {
-                        if i - 8 < 3 {
-                            short_name.ext[i - 8] = buf;
+                        if (8..11).contains(&idx) {
+                            sfn.ext[idx - 8] = ch;
                         } else {
                             return Err(FilenameError::NameTooLong.into());
                         }
-                    }
-                    else if i < 8 {
-                        short_name.name[i] = buf;
+                    } else if idx < 8 {
+                        sfn.name[idx] = ch;
                     } else {
                         return Err(FilenameError::NameTooLong.into());
                     }
-                    i += 1;
+                    idx += 1;
                 }
             }
         }
-        if i == 0 {
-        return Err(FilenameError::FilenameEmpty.into());
-        } else {
-            Ok(short_name)
+        if idx == 0 {
+            return Err(FilenameError::FilenameEmpty.into());
         }
+        Ok(sfn)
     }
-    
 }
-
 
 impl Debug for ShortFileName {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {

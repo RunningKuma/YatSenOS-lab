@@ -18,7 +18,7 @@ impl MbrPartition {
     }
 
     // FIXME: define other fields in the MbrPartition
-    //      - use `define_field!` macro 
+    //      - use `define_field!` macro
     //      - ensure you can pass the tests
     //      - you may change the field names if you want
     //
@@ -63,7 +63,6 @@ impl MbrPartition {
     pub fn is_active(&self) -> bool {
         self.status() == 0x80
     }
-
 }
 
 impl core::fmt::Debug for MbrPartition {

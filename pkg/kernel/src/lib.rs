@@ -25,7 +25,6 @@ pub use utils::*;
 pub mod drivers;
 pub use drivers::*;
 
-
 pub mod interrupt;
 pub mod memory;
 
@@ -35,8 +34,6 @@ pub mod proc;
 
 use boot::BootInfo;
 use uefi::{Status, runtime::ResetType};
-
-
 
 pub fn init(boot_info: &'static BootInfo) {
     unsafe {
@@ -52,7 +49,7 @@ pub fn init(boot_info: &'static BootInfo) {
     proc::init(boot_info); //init proc
     interrupt::init(); // init interrupts
     memory::init(boot_info); // init memory manager
-
+    filesystem::init(); // init filesystem
     x86_64::instructions::interrupts::enable();
     info!("Interrupts Enabled.");
 

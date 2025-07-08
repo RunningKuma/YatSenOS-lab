@@ -12,8 +12,8 @@ use process::*;
 use processor::{Processor, get_pid};
 use vm::ProcessVm;
 mod vm;
-use xmas_elf::{ElfFile, program};
 use sync::*;
+use xmas_elf::{ElfFile, program};
 
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
@@ -236,7 +236,6 @@ pub fn sem_signal(key: u32, context: &mut ProcessContext) {
     });
 }
 
-
 pub fn sem_wait(key: u32, context: &mut ProcessContext) {
     x86_64::instructions::interrupts::without_interrupts(|| {
         let manager = get_process_manager();
@@ -257,9 +256,7 @@ pub fn sem_wait(key: u32, context: &mut ProcessContext) {
     })
 }
 pub fn open(path: &str, mode: u8) -> Option<u8> {
-    x86_64::instructions::interrupts::without_interrupts(|| {
-        get_process_manager().open(path,mode)
-    })
+    x86_64::instructions::interrupts::without_interrupts(|| get_process_manager().open(path, mode))
 }
 
 pub fn close(fd: u8) -> bool {

@@ -79,9 +79,10 @@ pub fn dispatcher(context: &mut ProcessContext) {
             exit_process(&args, context);
         }
         // pid: arg0 as u16 -> status: isize
-        Syscall::WaitPid => { /* FIXME: check if the process is running or get retcode */
-           sys_waitpid(&args, context); //fix to fit lab0x05
-        },
+        Syscall::WaitPid => {
+            /* FIXME: check if the process is running or get retcode */
+            sys_waitpid(&args, context); //fix to fit lab0x05
+        }
         // None -> pid: u16 or 0 or -1
         Syscall::Fork => {
             fork(context);
@@ -95,10 +96,10 @@ pub fn dispatcher(context: &mut ProcessContext) {
         Syscall::ListApp => {
             /* FIXME: list available apps */
             sys_list_app();
-        },
+        }
         // op: u8, key: u32, val: usize -> ret: any
         Syscall::Sem => sys_sem(&args, context),
-        
+
         Syscall::ListDir => list_dir(&args),
 
         Syscall::Open => context.set_rax(sys_open(&args)),
@@ -114,8 +115,6 @@ pub fn dispatcher(context: &mut ProcessContext) {
         Syscall::Deallocate => sys_deallocate(&args),
         // Unknown
         Syscall::Unknown => warn!("Unhandled syscall: {:x?}", context.regs.rax),
-
-
     }
 }
 

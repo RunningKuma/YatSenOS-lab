@@ -7,11 +7,11 @@
 mod bus;
 mod consts;
 
+use crate::lazy_static;
 use alloc::{boxed::Box, string::String};
 use bus::AtaBus;
 use consts::AtaDeviceType;
 use spin::Mutex;
-use crate::lazy_static;
 
 lazy_static! {
     pub static ref BUSES: [Mutex<AtaBus>; 2] = {
@@ -42,15 +42,18 @@ impl AtaDrive {
         // we only support PATA drives
         if let Ok(AtaDeviceType::Pata(res)) = BUSES[bus as usize].lock().identify_drive(drive) {
             let buf = res.map(u16::to_be_bytes).concat();
-            let serial = { /* FIXME: get the serial from buf */ 
+            let serial = {
+                /* FIXME: get the serial from buf */
                 let serial_bytes = &buf[20..40];
                 String::from_utf8_lossy(serial_bytes).trim().into()
             };
-            let model = { /* FIXME: get the model from buf */ 
+            let model = {
+                /* FIXME: get the model from buf */
                 let model_bytes = &buf[54..94];
                 String::from_utf8_lossy(model_bytes).trim().into()
             };
-            let blocks = { /* FIXME: get the block count from buf */ 
+            let blocks = {
+                /* FIXME: get the block count from buf */
                 let blocks_bytes = &buf[120..124];
                 u32::from_le_bytes(blocks_bytes.try_into().unwrap())
             };
@@ -90,7 +93,7 @@ use storage::{Block512, BlockDevice};
 impl BlockDevice<Block512> for AtaDrive {
     fn block_count(&self) -> storage::FsResult<usize> {
         // FIXME: return the block count
-        return Ok(self.blocks as usize)
+        return Ok(self.blocks as usize);
     }
 
     fn read_block(&self, offset: usize, block: &mut Block512) -> storage::FsResult {
@@ -100,7 +103,6 @@ impl BlockDevice<Block512> for AtaDrive {
         BUSES[self.bus as usize]
             .lock()
             .read_pio(self.drive, offset as u32, block.as_mut())
-
     }
 
     fn write_block(&self, offset: usize, block: &Block512) -> storage::FsResult {

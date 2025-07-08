@@ -52,11 +52,10 @@ impl Read for File {
         let mut block = Block::default();
         let mut bytes_read = 0;
 
-        
         while bytes_read < buf.len() && self.offset < self.length() {
             let cluster_sector = self.handle.cluster_to_sector(&self.current_cluster);
             let cluster_offset = self.offset % cluster_size;
-            let current_sector = cluster_sector + cluster_offset / BLOCK_SIZE; 
+            let current_sector = cluster_sector + cluster_offset / BLOCK_SIZE;
 
             self.handle.inner.read_block(current_sector, &mut block)?;
 
@@ -88,7 +87,6 @@ impl Read for File {
 
         Ok(bytes_read)
     }
-
 }
 
 // NOTE: `Seek` trait is not required for this lab

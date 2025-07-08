@@ -14,21 +14,20 @@ pub trait Read {
             //      - extend the buffer if it's not big enough
             //      - break if the read returns 0 or Err
             //      - update the length of the buffer if data was read
-            buf.resize(start_len + 512, 0);  // extend the buffer if it's not big enough
+            buf.resize(start_len + 512, 0); // extend the buffer if it's not big enough
             match self.read(&mut buf[start_len..]) {
                 Ok(0) => {
                     buf.truncate(start_len);
                     return Ok(buf.len());
                 }
                 Ok(n) => {
-                    start_len += n;     //update the length of the buffer if data was read
+                    start_len += n; //update the length of the buffer if data was read
                     buf.truncate(start_len);
                 }
                 Err(e) => {
                     buf.truncate(start_len);
                     return Err(e);
                 }
-
             }
         }
     }

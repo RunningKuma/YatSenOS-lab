@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use lib::{vec::Vec, *};
+use lib::{string::String, vec::Vec, *};
 
 extern crate lib;
 
@@ -21,6 +21,7 @@ const HELP: &str = r"
 fn main() -> isize {
     loop {
         print!("kuma@ysos [>] ");
+        let root = String::from("/");
         let input = stdin().read_line();
         let cmd = input.split_whitespace().collect::<Vec<&str>>();
         match cmd[0] {
@@ -39,19 +40,37 @@ fn main() -> isize {
                 println!("The app {} has been spawn,pid: {}", app, pid);
                 sys_wait_pid(pid);
             }
-            // "hello" => {
-            //     let pid = sys_spawn("hello");
-            //     println!("The app hello has been spawn,pid: {}", pid);
-            //     let e = sys_wait_pid(pid);
-            //     println!("The app hello has been exit, pid: {}, exit code: {}", pid, e);
-            //     sys_stat();
-            // }
-            // "fac" => {
-            //     let pid = sys_spawn("factorial");
-            //     println!("The app factorial has been spawn,pid: {}", pid);
-            //     sys_wait_pid(pid);
-            //     sys_stat();
-            // }
+            "ls" => sys_list_dir(root.as_str()),
+            "cat" => {
+                let fd = sys_open(cmd[1].to_ascii_uppercase().as_str(), 1);
+
+                if fd == 0 {
+                    errln!("File not found or cannot open");
+                    return -1;
+                }
+
+                let mut buf = vec![0; 0x4000];
+
+                let size = sys_read(fd, &mut buf);
+
+                if size.is_none() {
+                    errln!("Cannot read file");
+                    return -1;
+                }
+
+                let size = size.unwrap();
+                if size == 0 {
+                    errln!("File is empty or buffer is too small!");
+                    return -1;
+                }
+
+                for i in 0..size {
+                    print!("{}", buf[i] as char);
+                }
+                println!("");
+
+                sys_close(fd);
+            }
             "exit" => {
                 println!("Thank you for using ysos!");
                 break;

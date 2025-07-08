@@ -136,12 +136,12 @@ impl Stack {
         stack_offset_count: u64,
     ) -> Self {
         // FIXME: alloc & map new stack for child (see instructions)
-        let mut new_stack_base = self.range.start.start_address().as_u64() - stack_offset_count * STACK_MAX_SIZE;
-        while elf::map_range(new_stack_base, self.usage, mapper, alloc, true).is_err() 
-            {
-                trace!("Map thread stack to {:#x} failed.", new_stack_base);
-                new_stack_base -= STACK_MAX_SIZE; // stack grow down
-            }
+        let mut new_stack_base =
+            self.range.start.start_address().as_u64() - stack_offset_count * STACK_MAX_SIZE;
+        while elf::map_range(new_stack_base, self.usage, mapper, alloc, true).is_err() {
+            trace!("Map thread stack to {:#x} failed.", new_stack_base);
+            new_stack_base -= STACK_MAX_SIZE; // stack grow down
+        }
         // FIXME: copy the *entire stack* from parent to child
         self.clone_range(
             self.range.start.start_address().as_u64(),
@@ -152,9 +152,11 @@ impl Stack {
         Self {
             range: Page::range(
                 Page::containing_address(VirtAddr::new(new_stack_base)),
-                Page::containing_address(VirtAddr::new(new_stack_base + self.usage * crate::memory::PAGE_SIZE)),
+                Page::containing_address(VirtAddr::new(
+                    new_stack_base + self.usage * crate::memory::PAGE_SIZE,
+                )),
             ),
-            usage: self.usage
+            usage: self.usage,
         }
     }
 
@@ -173,13 +175,12 @@ impl Stack {
             );
         }
     }
-    
+
     pub fn count_stack_offset(&self, parent_stack: &Stack) -> u64 {
         let parent_bot = parent_stack.range.start.start_address().as_u64();
         let child_bot = self.range.start.start_address().as_u64();
         child_bot - parent_bot
     }
-
 }
 
 impl core::fmt::Debug for Stack {
@@ -196,4 +197,3 @@ impl core::fmt::Debug for Stack {
             .finish()
     }
 }
-

@@ -48,9 +48,9 @@ impl Semaphore {
                 self.wait_queue.push_back(pid);
                 return SemaphoreResult::Block(pid);
             }
-            
-        // FIXME: else decrease the count and return Ok
-        _ => {
+
+            // FIXME: else decrease the count and return Ok
+            _ => {
                 self.count -= 1;
                 SemaphoreResult::Ok
             }
@@ -67,12 +67,11 @@ impl Semaphore {
         //          return WakeUp(pid)
         if let Some(pid) = self.wait_queue.pop_front() {
             return SemaphoreResult::WakeUp(pid);
-        }else{
+        } else {
             // FIXME: else increase the count and return Ok
             self.count += 1;
             return SemaphoreResult::Ok;
         }
-        
     }
 }
 
@@ -105,7 +104,7 @@ impl SemaphoreSet {
 
         // FIXME: try get the semaphore from the sems
         //         then do it's operation
-        
+
         if let Some(sem) = self.sems.get(&sid) {
             let mut sem = sem.lock();
             sem.wait(pid)
@@ -113,7 +112,6 @@ impl SemaphoreSet {
             // FIXME: return NotExist if the semaphore is not exist
             SemaphoreResult::NotExist
         }
-
     }
 
     /// Signal the semaphore (release/up/verhogen)
@@ -129,7 +127,6 @@ impl SemaphoreSet {
             // FIXME: return NotExist if the semaphore is not exist
             SemaphoreResult::NotExist
         }
-        
     }
 }
 
